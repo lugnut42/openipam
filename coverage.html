@@ -1,0 +1,1740 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>cmd: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/lugnut42/openipam/cmd/block_cmd.go (43.2%)</option>
+				
+				<option value="file1">github.com/lugnut42/openipam/cmd/config_cmd.go (82.1%)</option>
+				
+				<option value="file2">github.com/lugnut42/openipam/cmd/pattern_cmd.go (84.6%)</option>
+				
+				<option value="file3">github.com/lugnut42/openipam/cmd/root.go (11.8%)</option>
+				
+				<option value="file4">github.com/lugnut42/openipam/cmd/subnet_cmd.go (86.2%)</option>
+				
+				<option value="file5">github.com/lugnut42/openipam/internal/config/config_handler.go (72.2%)</option>
+				
+				<option value="file6">github.com/lugnut42/openipam/internal/ipam/ipam_block.go (100.0%)</option>
+				
+				<option value="file7">github.com/lugnut42/openipam/internal/ipam/ipam_block_add.go (0.0%)</option>
+				
+				<option value="file8">github.com/lugnut42/openipam/internal/ipam/ipam_block_available.go (35.9%)</option>
+				
+				<option value="file9">github.com/lugnut42/openipam/internal/ipam/ipam_block_delete.go (0.0%)</option>
+				
+				<option value="file10">github.com/lugnut42/openipam/internal/ipam/ipam_block_list.go (0.0%)</option>
+				
+				<option value="file11">github.com/lugnut42/openipam/internal/ipam/ipam_block_show.go (0.0%)</option>
+				
+				<option value="file12">github.com/lugnut42/openipam/internal/ipam/ipam_config.go (0.0%)</option>
+				
+				<option value="file13">github.com/lugnut42/openipam/internal/ipam/ipam_pattern.go (0.0%)</option>
+				
+				<option value="file14">github.com/lugnut42/openipam/internal/ipam/ipam_subnet.go (0.0%)</option>
+				
+				<option value="file15">github.com/lugnut42/openipam/internal/ipam/ipam_subnet_create.go (20.9%)</option>
+				
+				<option value="file16">github.com/lugnut42/openipam/internal/ipam/ipam_subnet_create_from_pattern.go (44.7%)</option>
+				
+				<option value="file17">github.com/lugnut42/openipam/internal/ipam/ipam_subnet_delete.go (0.0%)</option>
+				
+				<option value="file18">github.com/lugnut42/openipam/internal/ipam/ipam_subnet_list.go (0.0%)</option>
+				
+				<option value="file19">github.com/lugnut42/openipam/internal/ipam/ipam_subnet_show.go (0.0%)</option>
+				
+				<option value="file20">github.com/lugnut42/openipam/internal/ipam/util.go (77.1%)</option>
+				
+				<option value="file21">github.com/lugnut42/openipam/main.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package cmd
+
+import (
+        "fmt"
+        "os"
+
+        "github.com/lugnut42/openipam/internal/ipam"
+        "github.com/spf13/cobra"
+)
+
+// blockCmd represents the block command
+var blockCmd = &amp;cobra.Command{
+        Use:   "block",
+        Short: "Manage IP blocks",
+        Long:  `Add, list, show, and delete IP blocks.`,
+}
+
+var blockListCmd = &amp;cobra.Command{
+        Use:   "list",
+        Short: "List IP blocks",
+        Long:  `List all available IP blocks.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                err := ipam.ListBlocks(cfg)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+        },
+}
+
+var blockAddCmd = &amp;cobra.Command{
+        Use:   "add",
+        Short: "Add a new IP block",
+        Long:  `Add a new IP block to the YAML file.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov8" title="1">{
+                cidr, _ := cmd.Flags().GetString("cidr")
+                description, _ := cmd.Flags().GetString("description")
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.AddBlock(cfg, cidr, description, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+
+                <span class="cov8" title="1">fmt.Println("Block added successfully!")</span>
+        },
+}
+
+var blockShowCmd = &amp;cobra.Command{
+        Use:   "show",
+        Short: "Show details of an IP block",
+        Long:  `Display details of a specific IP block.`,
+        Args:  cobra.ExactArgs(1),
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                cidr := args[0]
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.ShowBlock(cfg, cidr, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+        },
+}
+
+var blockDeleteCmd = &amp;cobra.Command{
+        Use:   "delete",
+        Short: "Delete an IP block",
+        Long:  `Delete a specific IP block from the YAML file.`,
+        Args:  cobra.ExactArgs(1),
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                cidr := args[0]
+                force, _ := cmd.Flags().GetBool("force")
+
+                err := ipam.DeleteBlock(cfg, cidr, force)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+
+                <span class="cov0" title="0">fmt.Println("Block deleted successfully!")</span>
+        },
+}
+
+var blockAvailableCmd = &amp;cobra.Command{
+        Use:   "available",
+        Short: "List available CIDR ranges within a block",
+        Long:  `List all available CIDR ranges within a specified block.`,
+        Args:  cobra.ExactArgs(1),
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                cidr := args[0]
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.ListAvailableCIDRs(cfg, cidr, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+        },
+}
+
+func init() <span class="cov8" title="1">{
+        rootCmd.AddCommand(blockCmd)
+        blockCmd.AddCommand(blockListCmd)
+        blockAddCmd.Flags().StringP("cidr", "c", "", "CIDR block (required)")
+        blockAddCmd.MarkFlagRequired("cidr")
+        blockAddCmd.Flags().StringP("description", "d", "", "Description of the block")
+        blockAddCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+        blockCmd.AddCommand(blockAddCmd)
+        blockShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+        blockCmd.AddCommand(blockShowCmd)
+        blockDeleteCmd.Flags().BoolP("force", "f", false, "Force deletion without confirmation")
+        blockCmd.AddCommand(blockDeleteCmd)
+        blockAvailableCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+        blockCmd.AddCommand(blockAvailableCmd)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package cmd
+
+import (
+        "fmt"
+        "log"
+        "os"
+        "path/filepath"
+
+        "github.com/lugnut42/openipam/internal/config"
+        "github.com/lugnut42/openipam/internal/ipam"
+        "github.com/spf13/cobra"
+)
+
+var configCmd = &amp;cobra.Command{
+        Use:   "config",
+        Short: "Manage configuration",
+        Long:  `Initialize and manage the configuration file.`,
+}
+
+var configInitCmd = &amp;cobra.Command{
+        Use:   "init",
+        Short: "Initialize configuration",
+        Long:  `Initialize the configuration file.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                configFile, _ := cmd.Flags().GetString("config")
+                blockYAMLFile, _ := cmd.Flags().GetString("block-yaml-file")
+
+                log.Printf("DEBUG: Config init called with config=%s, block-yaml=%s", configFile, blockYAMLFile)
+
+                if configFile == "" </span><span class="cov0" title="0">{
+                        return fmt.Errorf("configuration file path is required")
+                }</span>
+
+                <span class="cov8" title="1">if blockYAMLFile == "" </span><span class="cov0" title="0">{
+                        return fmt.Errorf("block YAML file path is required")
+                }</span>
+
+                // Create the configuration directory if it doesn't exist
+                <span class="cov8" title="1">configDir := filepath.Dir(configFile)
+                err := os.MkdirAll(configDir, 0755)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("error creating configuration directory: %w", err)
+                }</span>
+
+                // Create an empty block YAML file if it doesn't exist
+                <span class="cov8" title="1">if _, err := os.Stat(blockYAMLFile); os.IsNotExist(err) </span><span class="cov8" title="1">{
+                        err = os.WriteFile(blockYAMLFile, []byte("[]"), 0644)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return fmt.Errorf("error creating block YAML file: %w", err)
+                        }</span>
+                }
+
+                // Write the configuration file
+                <span class="cov8" title="1">cfg = &amp;config.Config{
+                        BlockFiles: map[string]string{"default": blockYAMLFile},
+                        ConfigFile: configFile,
+                        Patterns:  make(map[string]map[string]config.Pattern),
+                }
+                
+                err = config.WriteConfig(cfg)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("error writing configuration file: %w", err)
+                }</span>
+
+                // Set the config for use by other commands
+                <span class="cov8" title="1">ipam.SetConfig(cfg)
+
+                fmt.Printf("Configuration file created successfully at %s\n", configFile)
+                fmt.Printf("Block YAML file created successfully at %s\n", blockYAMLFile)
+                
+                log.Printf("DEBUG: Config initialization complete. Config=%+v", cfg)
+                return nil</span>
+        },
+}
+
+func init() <span class="cov8" title="1">{
+        rootCmd.AddCommand(configCmd)
+        configCmd.AddCommand(configInitCmd)
+        configInitCmd.Flags().StringP("config", "c", "", "Path to configuration file")
+        configInitCmd.Flags().StringP("block-yaml-file", "b", "", "Path to block YAML file")
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package cmd
+
+import (
+        "fmt"
+        "os"
+
+        "github.com/lugnut42/openipam/internal/ipam"
+        "github.com/spf13/cobra"
+)
+
+var patternCmd = &amp;cobra.Command{
+        Use:   "pattern",
+        Short: "Manage subnet allocation patterns",
+        Long:  `Create, list, show, update, and delete subnet allocation patterns.`,
+}
+
+var patternCreateCmd = &amp;cobra.Command{
+        Use:   "create",
+        Short: "Create a new pattern",
+        Long:  `Create a new subnet allocation pattern.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov8" title="1">{
+                name, _ := cmd.Flags().GetString("name")
+                cidrSize, _ := cmd.Flags().GetInt("cidr-size")
+                environment, _ := cmd.Flags().GetString("environment")
+                region, _ := cmd.Flags().GetString("region")
+                block, _ := cmd.Flags().GetString("block")
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.CreatePattern(cfg, name, cidrSize, environment, region, block, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+
+                <span class="cov8" title="1">fmt.Println("Pattern created successfully!")</span>
+        },
+}
+
+var patternListCmd = &amp;cobra.Command{
+        Use:   "list",
+        Short: "List available patterns",
+        Long:  `List all available subnet allocation patterns.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov8" title="1">{
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.ListPatterns(cfg, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+        },
+}
+
+var patternShowCmd = &amp;cobra.Command{
+        Use:   "show",
+        Short: "Show pattern details",
+        Long:  `Show details of a specific subnet allocation pattern.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov8" title="1">{
+                name, _ := cmd.Flags().GetString("name")
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.ShowPattern(cfg, name, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+        },
+}
+
+var patternDeleteCmd = &amp;cobra.Command{
+        Use:   "delete",
+        Short: "Delete a pattern",
+        Long:  `Delete a specific subnet allocation pattern.`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov8" title="1">{
+                name, _ := cmd.Flags().GetString("name")
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.DeletePattern(cfg, name, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, "Error:", err)
+                        os.Exit(1)
+                }</span>
+
+                <span class="cov8" title="1">fmt.Println("Pattern deleted successfully!")</span>
+        },
+}
+
+func init() <span class="cov8" title="1">{
+        rootCmd.AddCommand(patternCmd)
+        patternCmd.AddCommand(patternCreateCmd)
+        patternCmd.AddCommand(patternListCmd)
+        patternCmd.AddCommand(patternShowCmd)
+        patternCmd.AddCommand(patternDeleteCmd)
+
+        patternCreateCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
+        patternCreateCmd.MarkFlagRequired("name")
+        patternCreateCmd.Flags().IntP("cidr-size", "c", 0, "CIDR size (required)")
+        patternCreateCmd.MarkFlagRequired("cidr-size")
+        patternCreateCmd.Flags().StringP("environment", "e", "", "Environment (required)")
+        patternCreateCmd.MarkFlagRequired("environment")
+        patternCreateCmd.Flags().StringP("region", "r", "", "Region (required)")
+        patternCreateCmd.MarkFlagRequired("region")
+        patternCreateCmd.Flags().StringP("block", "b", "", "Block CIDR (required)")
+        patternCreateCmd.MarkFlagRequired("block")
+        patternCreateCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+
+        patternListCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+
+        patternShowCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
+        patternShowCmd.MarkFlagRequired("name")
+        patternShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+
+        patternDeleteCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
+        patternDeleteCmd.MarkFlagRequired("name")
+        patternDeleteCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package cmd
+
+import (
+        "fmt"
+        "log"
+        "os"
+
+        "github.com/lugnut42/openipam/internal/config"
+        "github.com/lugnut42/openipam/internal/ipam"
+        "github.com/spf13/cobra"
+)
+
+var cfgFile string
+var cfg *config.Config
+
+var rootCmd = &amp;cobra.Command{
+        Use:   "ipam",
+        Short: "IP Address Management tool",
+        Long: `IP Address Management tool for managing IP blocks and subnets.
+
+To get started, you need to initialize the configuration file using one of the following methods:
+
+1. Using the IPAM_CONFIG_PATH environment variable:
+  export IPAM_CONFIG_PATH=/path/to/ipam-config.yaml
+  ipam config init
+
+2. Using the --config flag:
+  ipam config init --config /path/to/ipam-config.yaml
+
+You can then use the following commands to manage IP blocks and subnets:
+  ipam block create --cidr &lt;CIDR&gt; --name &lt;n&gt;
+  ipam subnet create --block &lt;block CIDR&gt; --cidr &lt;CIDR&gt; --name &lt;n&gt;`,
+        Example: `  ipam config init --config /path/to/ipam-config.yaml
+  ipam block create --cidr 10.0.0.0/16 --name main-datacenter
+  ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name app-tier`,
+        PersistentPreRunE: func(cmd *cobra.Command, args []string) error <span class="cov0" title="0">{
+                log.Printf("DEBUG: PersistentPreRunE called for command: %s", cmd.Name())
+                log.Printf("DEBUG: Current cfgFile value: %s", cfgFile)
+                log.Printf("DEBUG: Current cfg value: %+v", cfg)
+
+                // Skip configuration check for "config init" command
+                if cmd.Name() == "init" &amp;&amp; cmd.Parent() != nil &amp;&amp; cmd.Parent().Name() == "config" </span><span class="cov0" title="0">{
+                        log.Printf("DEBUG: Skipping config check for config init command")
+                        return nil
+                }</span>
+
+                // Check for --config flag
+                <span class="cov0" title="0">if cfgFile == "" </span><span class="cov0" title="0">{
+                        // Check for environment variable
+                        envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
+                        log.Printf("DEBUG: Environment IPAM_CONFIG_PATH: %s", envConfigPath)
+                        if envConfigPath == "" </span><span class="cov0" title="0">{
+                                return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
+                        }</span>
+                        <span class="cov0" title="0">cfgFile = envConfigPath</span>
+                }
+
+                <span class="cov0" title="0">log.Printf("DEBUG: Using config file: %s", cfgFile)
+
+                // Check if the configuration file exists
+                if _, err := os.Stat(cfgFile); os.IsNotExist(err) </span><span class="cov0" title="0">{
+                        log.Printf("ERROR: Config file not found at %s", cfgFile)
+                        return fmt.Errorf("configuration file not found at %s", cfgFile)
+                }</span>
+
+                // Load the configuration
+                <span class="cov0" title="0">log.Printf("DEBUG: Loading configuration from %s", cfgFile)
+                var err error
+                cfg, err = config.LoadConfig(cfgFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Printf("ERROR: Failed to load config: %v", err)
+                        return fmt.Errorf("error loading config file: %v", err)
+                }</span>
+                <span class="cov0" title="0">log.Printf("DEBUG: Loaded config: %+v", cfg)
+
+                // Set the configuration in the ipam package
+                log.Printf("DEBUG: Setting config in ipam package")
+                ipam.SetConfig(cfg)
+
+                return nil</span>
+        },
+}
+
+func Execute() <span class="cov0" title="0">{
+        if err := rootCmd.Execute(); err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Command execution failed: %v", err)
+                fmt.Fprintln(os.Stderr, err)
+                os.Exit(1)
+        }</span>
+}
+
+func init() <span class="cov8" title="1">{
+        log.Printf("DEBUG: Initializing root command")
+        cfg = &amp;config.Config{}
+        rootCmd.PersistentFlags().StringVar(&amp;cfgFile, "config", "", "Path to configuration file")
+        log.Printf("DEBUG: Root command initialized with empty config: %+v", cfg)
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package cmd
+
+import (
+        "fmt"
+
+        "github.com/lugnut42/openipam/internal/ipam"
+        "github.com/spf13/cobra"
+)
+
+var subnetCmd = &amp;cobra.Command{
+        Use:   "subnet",
+        Short: "Manage subnets",
+        Long:  `Create, list, show, and delete subnets.`,
+}
+
+var subnetCreateCmd = &amp;cobra.Command{
+        Use:   "create",
+        Short: "Create a new subnet",
+        Long:  `Allocate a new subnet within an existing IP block.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                block, _ := cmd.Flags().GetString("block")
+                cidr, _ := cmd.Flags().GetString("cidr")
+                name, _ := cmd.Flags().GetString("name")
+                region, _ := cmd.Flags().GetString("region")
+
+                err := ipam.CreateSubnet(cfg, block, cidr, name, region)
+                if err != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("Error: %w", err)
+                }</span>
+
+                <span class="cov8" title="1">fmt.Println("Subnet created successfully!")
+                return nil</span>
+        },
+}
+
+var subnetCreateFromPatternCmd = &amp;cobra.Command{
+        Use:   "create-from-pattern",
+        Short: "Create a new subnet from a pattern",
+        Long:  `Allocate a new subnet within an existing IP block based on a predefined pattern.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov0" title="0">{
+                patternName, _ := cmd.Flags().GetString("pattern")
+                fileKey, _ := cmd.Flags().GetString("file")
+
+                err := ipam.CreateSubnetFromPattern(cfg, patternName, fileKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("Error: %w", err)
+                }</span>
+
+                <span class="cov0" title="0">fmt.Println("Subnet created successfully!")
+                return nil</span>
+        },
+}
+
+var subnetDeleteCmd = &amp;cobra.Command{
+        Use:   "delete",
+        Short: "Delete a subnet",
+        Long:  `Delete a subnet from an existing IP block.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                cidr, _ := cmd.Flags().GetString("cidr")
+                force, _ := cmd.Flags().GetBool("force")
+
+                err := ipam.DeleteSubnet(cfg, cidr, force)
+                if err != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("Error: %w", err)
+                }</span>
+
+                <span class="cov8" title="1">fmt.Println("Subnet deleted successfully!")
+                return nil</span>
+        },
+}
+
+var subnetListCmd = &amp;cobra.Command{
+        Use:   "list",
+        Short: "List subnets",
+        Long:  `List all subnets within an existing IP block.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                block, _ := cmd.Flags().GetString("block")
+                region, _ := cmd.Flags().GetString("region")
+
+                err := ipam.ListSubnets(cfg, block, region)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("Error: %w", err)
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        },
+}
+
+var subnetShowCmd = &amp;cobra.Command{
+        Use:   "show",
+        Short: "Show details of a subnet",
+        Long:  `Show details of a specific subnet within an existing IP block.`,
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                cidr, _ := cmd.Flags().GetString("cidr")
+
+                err := ipam.ShowSubnet(cfg, cidr)
+                if err != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("Error: %w", err)
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        },
+}
+
+func init() <span class="cov8" title="1">{
+        rootCmd.AddCommand(subnetCmd)
+        subnetCmd.AddCommand(subnetCreateCmd)
+        subnetCmd.AddCommand(subnetCreateFromPatternCmd)
+        subnetCmd.AddCommand(subnetDeleteCmd)
+        subnetCmd.AddCommand(subnetListCmd)
+        subnetCmd.AddCommand(subnetShowCmd)
+
+        subnetCreateCmd.Flags().StringP("block", "b", "", "Block CIDR (required)")
+        subnetCreateCmd.MarkFlagRequired("block")
+        subnetCreateCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
+        subnetCreateCmd.MarkFlagRequired("cidr")
+        subnetCreateCmd.Flags().StringP("name", "n", "", "Subnet name (required)")
+        subnetCreateCmd.MarkFlagRequired("name")
+        subnetCreateCmd.Flags().StringP("region", "r", "", "Region (required)")
+        subnetCreateCmd.MarkFlagRequired("region")
+
+        subnetCreateFromPatternCmd.Flags().StringP("pattern", "p", "", "Pattern name (required)")
+        subnetCreateFromPatternCmd.MarkFlagRequired("pattern")
+        subnetCreateFromPatternCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+
+        subnetDeleteCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
+        subnetDeleteCmd.MarkFlagRequired("cidr")
+        subnetDeleteCmd.Flags().BoolP("force", "f", false, "Force delete")
+
+        subnetListCmd.Flags().StringP("block", "b", "", "Block CIDR")
+        subnetListCmd.Flags().StringP("region", "r", "", "Region")
+
+        subnetShowCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
+        subnetShowCmd.MarkFlagRequired("cidr")
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package config
+
+import (
+        "fmt"
+        "os"
+
+        "gopkg.in/yaml.v3"
+)
+
+type Config struct {
+        BlockFiles map[string]string             `yaml:"block_files"`
+        Patterns   map[string]map[string]Pattern `yaml:"patterns"`
+        ConfigFile string                        `yaml:"-"`
+}
+
+type Pattern struct {
+        CIDRSize    int    `yaml:"cidr_size"`
+        Environment string `yaml:"environment"`
+        Region      string `yaml:"region"`
+        Block       string `yaml:"block"`
+}
+
+func LoadConfig(configFile string) (*Config, error) <span class="cov8" title="1">{
+        data, err := os.ReadFile(configFile)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error reading config file: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">var cfg Config
+        err = yaml.Unmarshal(data, &amp;cfg)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error unmarshalling config: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">cfg.ConfigFile = configFile
+        return &amp;cfg, nil</span>
+}
+
+func WriteConfig(cfg *Config) error <span class="cov8" title="1">{
+        if cfg.ConfigFile == "" </span><span class="cov0" title="0">{
+                return fmt.Errorf("config file path not set")
+        }</span>
+
+        <span class="cov8" title="1">data, err := yaml.Marshal(cfg)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error marshalling config: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">err = os.WriteFile(cfg.ConfigFile, data, 0644)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error writing config file: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package ipam
+
+import (
+        "net"
+)
+
+// Block represents an IP block
+type Block struct {
+        CIDR        string   `yaml:"cidr"`
+        Description string   `yaml:"description"`
+        Subnets     []Subnet `yaml:"subnets"`
+}
+
+// Subnet represents a subnet within a block
+type Subnet struct {
+        CIDR   string `yaml:"cidr"`
+        Name   string `yaml:"name"`
+        Region string `yaml:"region"`
+}
+
+// Helper functions
+func nextIP(ip net.IP, mask net.IPMask) net.IP <span class="cov8" title="1">{
+        next := make(net.IP, len(ip))
+        copy(next, ip)
+        for i := len(next) - 1; i &gt;= 0; i-- </span><span class="cov8" title="1">{
+                next[i]++
+                if next[i] &gt; 0 </span><span class="cov8" title="1">{
+                        break</span>
+                }
+        }
+        <span class="cov8" title="1">return next.Mask(mask)</span>
+}
+
+func lastIP(network *net.IPNet) net.IP <span class="cov8" title="1">{
+        ip := make(net.IP, len(network.IP))
+        copy(ip, network.IP)
+        for i := range ip </span><span class="cov8" title="1">{
+                ip[i] |= ^network.Mask[i]
+        }</span>
+        <span class="cov8" title="1">return ip</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package ipam
+
+import (
+        "fmt"
+        "log"
+        "net"
+        "os"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func AddBlock(cfg *config.Config, cidr, description, fileKey string) error <span class="cov0" title="0">{
+        log.Printf("DEBUG: AddBlock called with CIDR=%s, description=%s, fileKey=%s", cidr, description, fileKey)
+        log.Printf("DEBUG: Config contents: %+v", cfg)
+
+        blockFile, ok := cfg.BlockFiles[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Block file not found for key '%s'. Available keys: %v", fileKey, cfg.BlockFiles)
+                return fmt.Errorf("block file for key %s not found", fileKey)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: Using block file: %s", blockFile)
+
+        // Check if block file exists
+        if _, err := os.Stat(blockFile); err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Block file does not exist: %v", err)
+                return fmt.Errorf("block file %s does not exist: %w", blockFile, err)
+        }</span>
+
+        // Validate CIDR
+        <span class="cov0" title="0">_, newBlockNet, err := net.ParseCIDR(cidr)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Invalid CIDR format: %v", err)
+                return fmt.Errorf("invalid CIDR: %w", err)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: CIDR validation passed for %s", cidr)
+
+        yamlData, err := readYAMLFile(blockFile)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Failed to read YAML file %s: %v", blockFile, err)
+                return fmt.Errorf("error reading YAML file: %w", err)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: Read YAML data from file (length: %d): %s", len(yamlData), string(yamlData))
+
+        blocks, err := unmarshalBlocks(yamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Failed to unmarshal blocks: %v", err)
+                return fmt.Errorf("error unmarshalling YAML data: %w", err)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: Unmarshalled %d existing blocks", len(blocks))
+        for i, block := range blocks </span><span class="cov0" title="0">{
+                log.Printf("DEBUG: Existing block %d: %+v", i, block)
+        }</span>
+
+        // Check if the block already exists or overlaps with an existing block
+        <span class="cov0" title="0">for _, b := range blocks </span><span class="cov0" title="0">{
+                _, existingBlockNet, err := net.ParseCIDR(b.CIDR)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Printf("ERROR: Failed to parse existing block CIDR %s: %v", b.CIDR, err)
+                        return fmt.Errorf("error parsing existing block CIDR: %w", err)
+                }</span>
+
+                <span class="cov0" title="0">if newBlockNet.Contains(existingBlockNet.IP) || existingBlockNet.Contains(newBlockNet.IP) </span><span class="cov0" title="0">{
+                        log.Printf("ERROR: CIDR overlap detected between %s and %s", cidr, b.CIDR)
+                        return fmt.Errorf("block with CIDR %s overlaps with existing block %s", cidr, b.CIDR)
+                }</span>
+        }
+        <span class="cov0" title="0">log.Printf("DEBUG: No overlapping blocks found")
+
+        // Add new block
+        newBlock := Block{
+                CIDR:        cidr,
+                Description: description,
+        }
+        blocks = append(blocks, newBlock)
+        log.Printf("DEBUG: Added new block: %+v", newBlock)
+
+        newYamlData, err := marshalBlocks(blocks)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Failed to marshal blocks: %v", err)
+                return fmt.Errorf("error marshalling blocks: %w", err)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: Marshalled new YAML data (length: %d): %s", len(newYamlData), string(newYamlData))
+
+        err = writeYAMLFile(blockFile, newYamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR: Failed to write YAML file: %v", err)
+                return fmt.Errorf("error writing YAML file: %w", err)
+        }</span>
+        <span class="cov0" title="0">log.Printf("DEBUG: Successfully wrote updated blocks to file")
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package ipam
+
+import (
+        "bytes"
+        "fmt"
+        "net"
+        "os"
+        "sort"
+        "text/tabwriter"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func ListAvailableCIDRs(cfg *config.Config, blockCIDR, fileKey string) error <span class="cov0" title="0">{
+        blockFile, ok := cfg.BlockFiles[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("block file for key %s not found", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">yamlData, err := readYAMLFile(blockFile)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">var block *Block
+        for _, b := range blocks </span><span class="cov0" title="0">{
+                if b.CIDR == blockCIDR </span><span class="cov0" title="0">{
+                        block = &amp;b
+                        break</span>
+                }
+        }
+
+        <span class="cov0" title="0">if block == nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("block %s not found", blockCIDR)
+        }</span>
+
+        <span class="cov0" title="0">availableCIDRs := calculateAvailableCIDRs(block)
+
+        w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+        fmt.Fprintln(w, "Available CIDR Ranges")
+        for _, cidr := range availableCIDRs </span><span class="cov0" title="0">{
+                fmt.Fprintln(w, cidr)
+        }</span>
+        <span class="cov0" title="0">w.Flush()
+
+        return nil</span>
+}
+
+func calculateAvailableCIDRs(block *Block) []string <span class="cov8" title="1">{
+        var availableCIDRs []string
+        _, blockNet, _ := net.ParseCIDR(block.CIDR)
+
+        // Sort subnets by starting IP
+        subnets := block.Subnets
+        sort.Slice(subnets, func(i, j int) bool </span><span class="cov8" title="1">{
+                _, subnetNetI, _ := net.ParseCIDR(subnets[i].CIDR)
+                _, subnetNetJ, _ := net.ParseCIDR(subnets[j].CIDR)
+                return bytes.Compare(subnetNetI.IP, subnetNetJ.IP) &lt; 0
+        }</span>)
+
+        // Find gaps between subnets
+        <span class="cov8" title="1">prevIP := blockNet.IP
+        for _, subnet := range subnets </span><span class="cov8" title="1">{
+                _, subnetNet, _ := net.ParseCIDR(subnet.CIDR)
+                if bytes.Compare(prevIP, subnetNet.IP) &lt; 0 </span><span class="cov0" title="0">{
+                        availableCIDRs = append(availableCIDRs, fmt.Sprintf("%s - %s", prevIP, subnetNet.IP))
+                }</span>
+                <span class="cov8" title="1">prevIP = nextIP(lastIP(subnetNet), subnetNet.Mask)</span>
+        }
+
+        // Check for space after the last subnet
+        <span class="cov8" title="1">if blockNet.Contains(prevIP) </span><span class="cov0" title="0">{
+                availableCIDRs = append(availableCIDRs, fmt.Sprintf("%s - %s", prevIP, lastIP(blockNet)))
+        }</span>
+
+        <span class="cov8" title="1">return availableCIDRs</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package ipam
+
+import (
+        "fmt"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func DeleteBlock(cfg *config.Config, cidr string, force bool) error <span class="cov0" title="0">{
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov0" title="0">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">if !force </span><span class="cov0" title="0">{
+                        // Prompt for confirmation if --force is not set
+                        var confirmation string
+                        fmt.Printf("Are you sure you want to delete block %s? (yes/no): ", cidr)
+                        fmt.Scanln(&amp;confirmation)
+
+                        if confirmation != "yes" </span><span class="cov0" title="0">{
+                                return fmt.Errorf("deletion cancelled")
+                        }</span>
+                }
+
+                <span class="cov0" title="0">newBlocks := []Block{} // Create a new slice to store the remaining blocks
+
+                for _, block := range blocks </span><span class="cov0" title="0">{
+                        if block.CIDR != cidr </span><span class="cov0" title="0">{
+                                newBlocks = append(newBlocks, block)
+                        }</span>
+                }
+
+                <span class="cov0" title="0">if len(blocks) == len(newBlocks) </span><span class="cov0" title="0">{
+                        continue</span> // If no block was removed, continue to the next file
+                }
+
+                <span class="cov0" title="0">newYamlData, err := marshalBlocks(newBlocks) // Marshal the updated blocks
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov0" title="0">err = writeYAMLFile(blockFile, newYamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">return nil</span>
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("block with CIDR %s not found", cidr)</span> // Handle if block isn't found in any file
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package ipam
+
+import (
+        "fmt"
+        "os"
+        "text/tabwriter"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func ListBlocks(cfg *config.Config) error <span class="cov0" title="0">{
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov0" title="0">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err // Return the wrapped error
+                }</span>
+
+                <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData) // Use the helper function
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+                fmt.Fprintln(w, "Block CIDR\tSubnet CIDR\tDescription")
+
+                for _, block := range blocks </span><span class="cov0" title="0">{
+                        if len(block.Subnets) &gt; 0 </span><span class="cov0" title="0">{
+                                for _, subnet := range block.Subnets </span><span class="cov0" title="0">{
+                                        fmt.Fprintln(w, block.CIDR+"\t"+subnet.CIDR+"\t"+block.Description)
+                                }</span>
+
+                        } else<span class="cov0" title="0"> {
+                                fmt.Fprintln(w, block.CIDR+"\t\t"+block.Description)
+                        }</span>
+                }
+
+                <span class="cov0" title="0">w.Flush()</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package ipam
+
+import (
+        "fmt"
+        "os"
+        "text/tabwriter"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func ShowBlock(cfg *config.Config, cidr, fileKey string) error <span class="cov0" title="0">{
+        blockFile, ok := cfg.BlockFiles[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("block file for key %s not found", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">yamlData, err := readYAMLFile(blockFile)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error reading YAML file: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error unmarshalling YAML data: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">for _, block := range blocks </span><span class="cov0" title="0">{
+                if block.CIDR == cidr </span><span class="cov0" title="0">{
+                        w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+                        fmt.Fprintln(w, "Block CIDR\tDescription")
+                        fmt.Fprintln(w, block.CIDR+"\t"+block.Description)
+                        fmt.Fprintln(w, "\nSubnets:")
+                        fmt.Fprintln(w, "Subnet CIDR\tName\tRegion")
+                        for _, subnet := range block.Subnets </span><span class="cov0" title="0">{
+                                fmt.Fprintln(w, subnet.CIDR+"\t"+subnet.Name+"\t"+subnet.Region)
+                        }</span>
+                        <span class="cov0" title="0">w.Flush()
+                        return nil</span>
+                }
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("block with CIDR %s not found", cidr)</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package ipam
+
+import (
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+var cfg *config.Config
+
+// SetConfig sets the global configuration
+func SetConfig(config *config.Config) <span class="cov0" title="0">{
+        cfg = config
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package ipam
+
+import (
+        "fmt"
+        "log"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+func CreatePattern(cfg *config.Config, name string, cidrSize int, environment, region, block, fileKey string) error <span class="cov0" title="0">{
+        log.Printf("Creating pattern: %s", name)
+        if cfg.Patterns == nil </span><span class="cov0" title="0">{
+                cfg.Patterns = make(map[string]map[string]config.Pattern)
+        }</span>
+        <span class="cov0" title="0">patterns, ok := cfg.Patterns[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                patterns = make(map[string]config.Pattern)
+                cfg.Patterns[fileKey] = patterns
+        }</span>
+
+        <span class="cov0" title="0">if _, exists := patterns[name]; exists </span><span class="cov0" title="0">{
+                return fmt.Errorf("pattern %s already exists", name)
+        }</span>
+
+        // Validate CIDR size
+        <span class="cov0" title="0">if cidrSize &lt; 0 || cidrSize &gt; 32 </span><span class="cov0" title="0">{
+                return fmt.Errorf("invalid CIDR size: %d", cidrSize)
+        }</span>
+
+        // Ensure the block exists
+        <span class="cov0" title="0">blockFile, ok := cfg.BlockFiles[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("block file for key %s not found", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">yamlData, err := readYAMLFile(blockFile)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error reading YAML file: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error unmarshalling YAML data: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">blockExists := false
+        for _, b := range blocks </span><span class="cov0" title="0">{
+                if b.CIDR == block </span><span class="cov0" title="0">{
+                        blockExists = true
+                        break</span>
+                }
+        }
+
+        <span class="cov0" title="0">if !blockExists </span><span class="cov0" title="0">{
+                return fmt.Errorf("block %s not found", block)
+        }</span>
+
+        <span class="cov0" title="0">pattern := config.Pattern{
+                CIDRSize:    cidrSize,
+                Environment: environment,
+                Region:      region,
+                Block:       block,
+        }
+
+        patterns[name] = pattern
+        log.Printf("Pattern created: %+v", pattern)
+        return config.WriteConfig(cfg)</span>
+}
+
+func ListPatterns(cfg *config.Config, fileKey string) error <span class="cov0" title="0">{
+        log.Printf("Listing patterns for file key: %s", fileKey)
+        patterns, ok := cfg.Patterns[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("no patterns found for file key %s", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">for name, pattern := range patterns </span><span class="cov0" title="0">{
+                fmt.Printf("Name: %s, CIDR Size: %d, Environment: %s, Region: %s, Block: %s\n",
+                        name, pattern.CIDRSize, pattern.Environment, pattern.Region, pattern.Block)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func ShowPattern(cfg *config.Config, name, fileKey string) error <span class="cov0" title="0">{
+        log.Printf("Showing pattern: %s", name)
+        patterns, ok := cfg.Patterns[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("no patterns found for file key %s", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">pattern, ok := patterns[name]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("pattern %s not found", name)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Printf("Name: %s, CIDR Size: %d, Environment: %s, Region: %s, Block: %s\n",
+                name, pattern.CIDRSize, pattern.Environment, pattern.Region, pattern.Block)
+        return nil</span>
+}
+
+func DeletePattern(cfg *config.Config, name, fileKey string) error <span class="cov0" title="0">{
+        log.Printf("Deleting pattern: %s", name)
+        patterns, ok := cfg.Patterns[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("no patterns found for file key %s", fileKey)
+        }</span>
+
+        <span class="cov0" title="0">if _, exists := patterns[name]; !exists </span><span class="cov0" title="0">{
+                return fmt.Errorf("pattern %s not found", name)
+        }</span>
+
+        <span class="cov0" title="0">delete(patterns, name)
+        log.Printf("Pattern deleted: %s", name)
+        return config.WriteConfig(cfg)</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package ipam
+
+import (
+        "net"
+)
+
+// Helper functions
+func isSubnetOverlapping(subnets []Subnet, newSubnet *net.IPNet) bool <span class="cov0" title="0">{
+        for _, subnet := range subnets </span><span class="cov0" title="0">{
+                _, existingSubnetNet, _ := net.ParseCIDR(subnet.CIDR)
+                if newSubnet.Contains(existingSubnetNet.IP) || existingSubnetNet.Contains(newSubnet.IP) </span><span class="cov0" title="0">{
+                        return true
+                }</span>
+        }
+        <span class="cov0" title="0">return false</span>
+}
+
+func incrementIP(ip net.IP) <span class="cov0" title="0">{
+        for j := len(ip) - 1; j &gt;= 0; j-- </span><span class="cov0" title="0">{
+                ip[j]++
+                if ip[j] &gt; 0 </span><span class="cov0" title="0">{
+                        break</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package ipam
+
+import (
+        "errors"
+        "fmt"
+        "log"
+        "net"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+// CreateSubnet creates a new subnet within a block
+func CreateSubnet(cfg *config.Config, blockCIDR, subnetCIDR, name, region string) error <span class="cov8" title="1">{
+        log.Printf("Creating subnet: blockCIDR=%s, subnetCIDR=%s, name=%s, region=%s", blockCIDR, subnetCIDR, name, region)
+
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov8" title="1">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov8" title="1">blocks, err := unmarshalBlocks(yamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Validate subnet CIDR (ensure it's a valid CIDR and within the block)
+                <span class="cov8" title="1">_, subnetNet, err := net.ParseCIDR(subnetCIDR)
+                if err != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("invalid subnet CIDR: %w", err)
+                }</span>
+
+                <span class="cov0" title="0">_, blockNet, err := net.ParseCIDR(blockCIDR)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("invalid block CIDR: %w", err)
+                }</span>
+
+                <span class="cov0" title="0">if !blockNet.Contains(subnetNet.IP) </span><span class="cov0" title="0">{
+                        return errors.New("subnet is not within the specified block")
+                }</span>
+
+                <span class="cov0" title="0">newSubnet := Subnet{
+                        CIDR:   subnetCIDR,
+                        Name:   name,
+                        Region: region,
+                }
+
+                // Find the block and add the subnet. If the block does not exist, return an error.
+                found := false
+
+                for i, block := range blocks </span><span class="cov0" title="0">{
+                        if block.CIDR == blockCIDR </span><span class="cov0" title="0">{
+                                // Check for available space in the block
+                                availableCIDRs := calculateAvailableCIDRs(&amp;block)
+                                log.Printf("Available CIDRs in block %s: %v", blockCIDR, availableCIDRs)
+                                if len(availableCIDRs) == 0 </span><span class="cov0" title="0">{
+                                        return fmt.Errorf("no available CIDR found in block %s", block.CIDR)
+                                }</span>
+
+                                // Check for overlapping subnets
+                                <span class="cov0" title="0">for _, existingSubnet := range block.Subnets </span><span class="cov0" title="0">{
+                                        _, existingSubnetNet, err := net.ParseCIDR(existingSubnet.CIDR)
+                                        if err != nil </span><span class="cov0" title="0">{
+                                                return fmt.Errorf("error parsing existing subnet CIDR: %w", err)
+                                        }</span>
+
+                                        <span class="cov0" title="0">if subnetNet.Contains(existingSubnetNet.IP) || existingSubnetNet.Contains(subnetNet.IP) </span><span class="cov0" title="0">{
+                                                return fmt.Errorf("subnet with CIDR %s overlaps with existing subnet %s", subnetCIDR, existingSubnet.CIDR)
+                                        }</span>
+                                }
+
+                                <span class="cov0" title="0">blocks[i].Subnets = append(blocks[i].Subnets, newSubnet)
+                                found = true
+                                break</span> // Exit the loop once the block is found
+                        }
+                }
+
+                <span class="cov0" title="0">if found </span><span class="cov0" title="0">{
+                        newYamlData, err := marshalBlocks(blocks)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                        <span class="cov0" title="0">err = writeYAMLFile(blockFile, newYamlData)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+
+                        <span class="cov0" title="0">log.Printf("Subnet created successfully: %s", subnetCIDR)
+                        return nil</span>
+                }
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("block with CIDR %s not found", blockCIDR)</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package ipam
+
+import (
+        "fmt"
+        "log"
+        "net"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+// CreateSubnetFromPattern creates a new subnet from a pattern
+func CreateSubnetFromPattern(cfg *config.Config, patternName, fileKey string) error <span class="cov8" title="1">{
+        log.Printf("Creating subnet from pattern: patternName=%s, fileKey=%s", patternName, fileKey)
+
+        patterns, ok := cfg.Patterns[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("patterns for file key %s not found", fileKey)
+        }</span>
+
+        <span class="cov8" title="1">pattern, ok := patterns[patternName]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("pattern %s not found", patternName)
+        }</span>
+
+        <span class="cov8" title="1">blockFile, ok := cfg.BlockFiles[fileKey]
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("block file for key %s not found", fileKey)
+        }</span>
+
+        <span class="cov8" title="1">yamlData, err := readYAMLFile(blockFile)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error reading YAML file: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">blocks, err := unmarshalBlocks(yamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error unmarshalling YAML data: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">var block *Block
+        for i, b := range blocks </span><span class="cov8" title="1">{
+                if b.CIDR == pattern.Block </span><span class="cov8" title="1">{
+                        block = &amp;blocks[i]
+                        break</span>
+                }
+        }
+
+        <span class="cov8" title="1">if block == nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("block %s not found", pattern.Block)
+        }</span>
+
+        // Check for available space in the block
+        <span class="cov8" title="1">availableCIDRs := calculateAvailableCIDRs(block)
+        log.Printf("Available CIDRs in block %s: %v", block.CIDR, availableCIDRs)
+        if len(availableCIDRs) == 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("no available CIDR found in block %s", block.CIDR)
+        }</span>
+
+        // Find the next available subnet
+        <span class="cov0" title="0">var newSubnetCIDR string
+        _, blockNet, _ := net.ParseCIDR(block.CIDR)
+        for ip := blockNet.IP.Mask(blockNet.Mask); blockNet.Contains(ip); incrementIP(ip) </span><span class="cov0" title="0">{
+                subnet := fmt.Sprintf("%s/%d", ip.String(), pattern.CIDRSize)
+                _, subnetNet, _ := net.ParseCIDR(subnet)
+                if !isSubnetOverlapping(block.Subnets, subnetNet) </span><span class="cov0" title="0">{
+                        newSubnetCIDR = subnet
+                        break</span>
+                }
+        }
+
+        <span class="cov0" title="0">if newSubnetCIDR == "" </span><span class="cov0" title="0">{
+                return fmt.Errorf("no available subnet found in block %s", block.CIDR)
+        }</span>
+
+        <span class="cov0" title="0">newSubnet := Subnet{
+                CIDR:   newSubnetCIDR,
+                Name:   patternName,
+                Region: pattern.Region,
+        }
+
+        block.Subnets = append(block.Subnets, newSubnet)
+
+        newYamlData, err := marshalBlocks(blocks)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error marshalling blocks: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">err = writeYAMLFile(blockFile, newYamlData)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error writing YAML file: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">log.Printf("Subnet created successfully from pattern: %s", newSubnetCIDR)
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package ipam
+
+import (
+        "fmt"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+// DeleteSubnet deletes a subnet from a block
+func DeleteSubnet(cfg *config.Config, subnetCIDR string, force bool) error <span class="cov0" title="0">{
+        subnetFound := false
+
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov0" title="0">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">newBlocks := []Block{} // Create a new slice to store the remaining blocks
+
+                for _, block := range blocks </span><span class="cov0" title="0">{
+                        newSubnets := []Subnet{} // Create a new slice to store the remaining subnets
+
+                        for _, subnet := range block.Subnets </span><span class="cov0" title="0">{
+                                if subnet.CIDR != subnetCIDR </span><span class="cov0" title="0">{
+                                        newSubnets = append(newSubnets, subnet)
+                                }</span> else<span class="cov0" title="0"> {
+                                        subnetFound = true
+                                }</span>
+                        }
+
+                        <span class="cov0" title="0">block.Subnets = newSubnets
+                        newBlocks = append(newBlocks, block)</span>
+                }
+
+                <span class="cov0" title="0">if subnetFound </span><span class="cov0" title="0">{
+                        newYamlData, err := marshalBlocks(newBlocks) // Marshal the updated blocks
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                        <span class="cov0" title="0">err = writeYAMLFile(blockFile, newYamlData)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+
+                        <span class="cov0" title="0">return nil</span>
+                }
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("subnet with CIDR %s not found", subnetCIDR)</span> // Handle if subnet isn't found in any file
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package ipam
+
+import (
+        "fmt"
+        "os"
+        "text/tabwriter"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+// ListSubnets lists all subnets within a block
+func ListSubnets(cfg *config.Config, blockCIDR, region string) error <span class="cov0" title="0">{
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov0" title="0">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+                fmt.Fprintln(w, "Block CIDR\tSubnet CIDR\tName\tRegion") // Table header
+
+                for _, block := range blocks </span><span class="cov0" title="0">{
+                        // Optionally filter by blockCIDR
+                        if blockCIDR != "" &amp;&amp; block.CIDR != blockCIDR </span><span class="cov0" title="0">{
+                                continue</span> // Skip blocks that don't match the filter
+                        }
+
+                        <span class="cov0" title="0">for _, subnet := range block.Subnets </span><span class="cov0" title="0">{
+                                // Optionally filter by region
+                                if region != "" &amp;&amp; region != subnet.Region </span><span class="cov0" title="0">{
+                                        continue</span> // Skip subnets that don't match the region
+                                }
+
+                                <span class="cov0" title="0">fmt.Fprintln(w, block.CIDR+"\t"+subnet.CIDR+"\t"+subnet.Name+"\t"+subnet.Region)</span>
+                        }
+                }
+
+                <span class="cov0" title="0">w.Flush()</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package ipam
+
+import (
+        "fmt"
+        "os"
+        "text/tabwriter"
+
+        "github.com/lugnut42/openipam/internal/config"
+)
+
+// ShowSubnet displays the details of a specific subnet
+func ShowSubnet(cfg *config.Config, subnetCIDR string) error <span class="cov0" title="0">{
+        for _, blockFile := range cfg.BlockFiles </span><span class="cov0" title="0">{
+                yamlData, err := readYAMLFile(blockFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">blocks, err := unmarshalBlocks(yamlData)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">for _, block := range blocks </span><span class="cov0" title="0">{
+                        for _, subnet := range block.Subnets </span><span class="cov0" title="0">{
+                                if subnet.CIDR == subnetCIDR </span><span class="cov0" title="0">{
+                                        // Found the subnet
+                                        w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+                                        fmt.Fprintln(w, "Block CIDR:\t", block.CIDR)
+                                        fmt.Fprintln(w, "Subnet CIDR:\t", subnet.CIDR)
+                                        fmt.Fprintln(w, "Name:\t", subnet.Name)
+                                        fmt.Fprintln(w, "Region:\t", subnet.Region) // Include the Region
+
+                                        w.Flush()
+
+                                        return nil
+                                }</span>
+                        }
+                }
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("subnet with CIDR %s not found", subnetCIDR)</span>
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package ipam
+
+import (
+        "fmt"
+        "os"
+
+        "gopkg.in/yaml.v3"
+)
+
+// Helper functions to break down AddBlock (implement these next)
+func readYAMLFile(filePath string) ([]byte, error) <span class="cov8" title="1">{
+        yamlData, err := os.ReadFile(filePath)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error reading YAML file: %w", err)
+        }</span>
+        <span class="cov8" title="1">return yamlData, nil</span>
+}
+
+func unmarshalBlocks(yamlData []byte) ([]Block, error) <span class="cov8" title="1">{
+        var blocks []Block
+        var yamlDataInterface interface{}
+        err := yaml.Unmarshal(yamlData, &amp;yamlDataInterface)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error unmarshalling YAML: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">if yamlDataInterface != nil </span><span class="cov8" title="1">{
+                if iBlocks, ok := yamlDataInterface.([]interface{}); ok </span><span class="cov8" title="1">{ // Check if it's []interface{}
+                        for _, iBlock := range iBlocks </span><span class="cov8" title="1">{
+                                if block, ok := iBlock.(map[string]interface{}); ok </span><span class="cov8" title="1">{
+                                        // Now convert each map[string]interface{} to Block
+                                        cidr := block["cidr"].(string)
+                                        description := block["description"].(string)
+                                        subnetsInterface, ok := block["subnets"].([]interface{})
+                                        if !ok </span><span class="cov0" title="0">{
+                                                // Handle the case where "subnets" is missing or not an array
+                                                subnetsInterface = []interface{}{} // Empty slice if "subnets" key is missing or of incorrect type
+                                        }</span>
+
+                                        <span class="cov8" title="1">subnets := make([]Subnet, len(subnetsInterface))
+
+                                        for i, subnetInterface := range subnetsInterface </span><span class="cov8" title="1">{
+                                                if subnet, ok := subnetInterface.(map[string]interface{}); ok </span><span class="cov8" title="1">{
+                                                        subnets[i] = Subnet{
+                                                                CIDR: subnet["cidr"].(string),
+                                                                Name: subnet["name"].(string),
+                                                        }
+
+                                                }</span>
+
+                                        }
+                                        <span class="cov8" title="1">blocks = append(blocks, Block{CIDR: cidr, Description: description, Subnets: subnets})</span>
+
+                                }
+                        }
+
+                } else<span class="cov0" title="0"> if blocksInterface, ok := yamlDataInterface.([]Block); ok </span><span class="cov0" title="0">{
+                        blocks = blocksInterface
+                }</span> else<span class="cov0" title="0"> {
+                        return nil, fmt.Errorf("unexpected YAML data type %T", yamlDataInterface)
+                }</span>
+
+        }
+
+        <span class="cov8" title="1">return blocks, nil</span>
+}
+
+func marshalBlocks(blocks []Block) ([]byte, error) <span class="cov8" title="1">{
+        newYamlData, err := yaml.Marshal(blocks)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error marshalling YAML: %w", err)
+        }</span>
+        <span class="cov8" title="1">return newYamlData, nil</span>
+
+}
+
+func writeYAMLFile(filePath string, yamlData []byte) error <span class="cov8" title="1">{
+        err := os.WriteFile(filePath, yamlData, 0644)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("error writing YAML file: %w", err)
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">/*
+Copyright © 2025 lugnut42
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+package main
+
+import (
+        "github.com/lugnut42/openipam/cmd"
+)
+
+func main() <span class="cov0" title="0">{
+        cmd.Execute()
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
