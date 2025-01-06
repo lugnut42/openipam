@@ -39,10 +39,21 @@ jobs:
           echo "GOBIN=${GITHUB_WORKSPACE}/go/bin" >> $GITHUB_ENV
           echo "${GITHUB_WORKSPACE}/go/bin" >> $GITHUB_PATH
 
-      - name: Get dependencies
+      # Split out the go mod tidy into its own step
+      - name: Update go.mod
         run: |
           go mod tidy
-          go mod download
+          cat go.mod
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: List workspace
+        run: |
+          pwd
+          ls -la
+          echo "GOPATH=$GOPATH"
+          go env
 
       - name: Run tests
         run: go test -v ./...
@@ -71,7 +82,9 @@ jobs:
           go-version: 1.23.4
 
       - name: Build binary
-        run: go build -o ipam
+        run: |
+          go mod tidy
+          go build -o ipam
 
       - name: Create release
         id: create_release
