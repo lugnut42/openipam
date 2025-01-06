@@ -33,6 +33,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Tidy Go modules
+        run: go mod tidy
+
       - name: Install dependencies
         run: go mod download
 
