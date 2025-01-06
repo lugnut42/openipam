@@ -22,7 +22,7 @@ THE SOFTWARE.
 package main
 
 import (
-	"github.com/lugnut42/openipam/cmd"
+	"openipam/cmd"
 )
 
 func main() {

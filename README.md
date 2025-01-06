@@ -18,7 +18,7 @@ OpenIPAM is a command-line tool for managing IP address blocks and subnets. It p
 
 1. **Install OpenIPAM**:
    ```bash
-   go install github.com/lugnut42/openipam@latest
+   go install /openipam@latest
    ```
 
 2. **Initialize configuration**:
@@ -57,7 +57,7 @@ OpenIPAM is a command-line tool for managing IP address blocks and subnets. It p
 ### From Source
 
 ```bash
-git clone https://github.com/lugnut42/openipam.git
+git clone https:///openipam.git
 cd openipam
 go build
 ```
@@ -65,7 +65,7 @@ go build
 ### Using Go Install
 
 ```bash
-go install github.com/lugnut42/openipam@latest
+go install /openipam@latest
 ```
 
 ### Enable Shell Completion
@@ -278,7 +278,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/lugnut42/openipam.git
+   git clone https:///openipam.git
    ```
 3. Create a new branch:
    ```bash
@@ -336,8 +336,8 @@ Future enhancements planned for OpenIPAM:
 - Subnet request workflow system
 - Advanced conflict detection
 
-To request a feature or track progress, please check our [GitHub Issues](https://github.com/lugnut42/openipam/issues).
+To request a feature or track progress, please check our [GitHub Issues](https:///openipam/issues).
 
 ## Support
 
-Please [open an issue](https://github.com/lugnut42/openipam/issues/new) for support.
+Please [open an issue](https:///openipam/issues/new) for support.

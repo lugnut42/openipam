@@ -3,7 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/lugnut42/openipam/internal/ipam"
+	"openipam/internal/ipam"
+
 	"github.com/spf13/cobra"
 )
 

@@ -6,8 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lugnut42/openipam/internal/config"
-	"github.com/lugnut42/openipam/internal/ipam"
+	"openipam/internal/ipam"
+
+	"openipam/internal/ipam/config"
+
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +19,7 @@ func TestSubnetCommands(t *testing.T) {
 	tempDir := t.TempDir()
 	configPath := filepath.Join(tempDir, "ipam-config.yaml")
 	blockPath := filepath.Join(tempDir, "ip-blocks.yaml")
-	
+
 	log.Printf("DEBUG: Test setup - Config path: %s", configPath)
 	log.Printf("DEBUG: Test setup - Block path: %s", blockPath)
 
@@ -68,8 +70,8 @@ func TestSubnetCommands(t *testing.T) {
 	if err != nil {
 		log.Printf("ERROR: Failed to add block: %v", err)
 		if cfg != nil {
-            log.Printf("DEBUG: Current config state: %+v", cfg)
-        }
+			log.Printf("DEBUG: Current config state: %+v", cfg)
+		}
 		t.Fatal(err)
 	}
 	log.Printf("DEBUG: Block created successfully")

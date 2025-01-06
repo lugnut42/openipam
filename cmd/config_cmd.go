@@ -6,8 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lugnut42/openipam/internal/config"
-	"github.com/lugnut42/openipam/internal/ipam"
+	"openipam/internal/ipam"
+
+	"openipam/internal/ipam/config"
+
 	"github.com/spf13/cobra"
 )
 
@@ -54,9 +56,9 @@ var configInitCmd = &cobra.Command{
 		cfg = &config.Config{
 			BlockFiles: map[string]string{"default": blockYAMLFile},
 			ConfigFile: configFile,
-			Patterns:  make(map[string]map[string]config.Pattern),
+			Patterns:   make(map[string]map[string]config.Pattern),
 		}
-		
+
 		err = config.WriteConfig(cfg)
 		if err != nil {
 			return fmt.Errorf("error writing configuration file: %w", err)
@@ -67,7 +69,7 @@ var configInitCmd = &cobra.Command{
 
 		fmt.Printf("Configuration file created successfully at %s\n", configFile)
 		fmt.Printf("Block YAML file created successfully at %s\n", blockYAMLFile)
-		
+
 		log.Printf("DEBUG: Config initialization complete. Config=%+v", cfg)
 		return nil
 	},

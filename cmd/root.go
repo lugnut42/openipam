@@ -5,8 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/lugnut42/openipam/internal/config"
-	"github.com/lugnut42/openipam/internal/ipam"
+	"openipam/internal/ipam"
+
+	"openipam/internal/ipam/config"
+
 	"github.com/spf13/cobra"
 )
 
