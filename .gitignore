@@ -24,8 +24,9 @@ go.work.sum
 # env file
 .env
 
-# all directories that start with .
-.*/
+# temporary file for docs and tests
+.docs
+.test
 
 # the ipam executable
 ipam
