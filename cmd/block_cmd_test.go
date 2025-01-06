@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"openipam/internal/ipam/config"
+	"openipam/internal/config"
 
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"

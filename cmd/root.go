@@ -7,7 +7,7 @@ import (
 
 	"openipam/internal/ipam"
 
-	"openipam/internal/ipam/config"
+	"openipam/internal/config"
 
 	"github.com/spf13/cobra"
 )
