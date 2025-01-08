@@ -7,37 +7,26 @@ on:
     branches: [ main ]
 
 jobs:
-  debug:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          path: go/src/github.com/lugnut42/openipam
       
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-          
-      - name: Debug Environment
+
+      - name: Debug Info
         run: |
-          echo "Current directory:"
-          pwd
-          echo "\nDirectory contents:"
-          ls -la
-          echo "\nGo environment:"
-          go env
-          echo "\ngo.mod contents:"
-          cat go.mod
-          echo "\nRepository structure:"
-          find . -type f -name "*.go" | sort
-          
-      - name: Debug Go Module
+          echo "PWD: $(pwd)"
+          echo "GOPATH: $GOPATH"
+          ls -la go/src/github.com/lugnut42/openipam/
+        
+      - name: Test
+        working-directory: go/src/github.com/lugnut42/openipam
         run: |
-          echo "Initializing Go module..."
-          go mod init github.com/lugnut42/openipam || true
-          echo "\nTidying modules..."
-          go mod tidy -v
-          echo "\nDownloading modules..."
-          go mod download -x
-          
-      - name: Run tests with verbose output
-        run: go test -v ./...
+          go mod download
+          go test -v ./...
