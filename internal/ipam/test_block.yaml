@@ -1,0 +1,15 @@
+- cidr: 10.0.0.0/24
+  description: ""
+  subnets:
+    - cidr: 10.0.0.0/26
+      name: ""
+      region: ""
+    - cidr: 10.0.0.64/26
+      name: ""
+      region: ""
+    - cidr: 10.0.0.128/26
+      name: ""
+      region: ""
+    - cidr: 10.0.0.192/26
+      name: ""
+      region: ""
