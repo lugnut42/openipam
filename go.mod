@@ -1,4 +1,4 @@
-module github.com/username/openipam
+module github.com/lugnut42/openipam
 
 go 1.21
 

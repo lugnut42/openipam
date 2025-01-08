@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/username/openipam/internal/ipam"
+	"github.com/lugnut42/openipam/internal/ipam"
 
 	"github.com/spf13/cobra"
 )
