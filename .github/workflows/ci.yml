@@ -5,11 +5,9 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  release:
-    types: [created]
 
 jobs:
-  test:
+  debug:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,33 +17,27 @@ jobs:
         with:
           go-version: '1.21'
           
-      - name: Install dependencies
+      - name: Debug Environment
         run: |
-          go mod download
-          go mod tidy
+          echo "Current directory:"
+          pwd
+          echo "\nDirectory contents:"
+          ls -la
+          echo "\nGo environment:"
+          go env
+          echo "\ngo.mod contents:"
+          cat go.mod
+          echo "\nRepository structure:"
+          find . -type f -name "*.go" | sort
           
-      - name: Run tests
+      - name: Debug Go Module
+        run: |
+          echo "Initializing Go module..."
+          go mod init github.com/lugnut42/openipam || true
+          echo "\nTidying modules..."
+          go mod tidy -v
+          echo "\nDownloading modules..."
+          go mod download -x
+          
+      - name: Run tests with verbose output
         run: go test -v ./...
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-          
-      - name: Build
-        run: |
-          go mod download
-          go mod tidy
-          go build -v -o ipam
-          
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ipam
-          path: ipam
