@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"openipam/internal/config"
-	"openipam/internal/ipam"
+	"github.com/username/openipam/internal/config"
+	"github.com/username/openipam/internal/ipam"
 
 	"github.com/spf13/cobra"
 )

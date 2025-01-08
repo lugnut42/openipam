@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"openipam/internal/ipam"
+	"github.com/username/openipam/internal/ipam"
 
-	"openipam/internal/config"
+	"github.com/username/openipam/internal/config"
 
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
