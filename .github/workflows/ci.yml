@@ -29,19 +29,26 @@ jobs:
         working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
         run: |
           pwd
+          echo "Directory contents:"
           ls -la
+          echo "Current tree structure:"
+          find . -type f -name "*.go" | sort
           echo "GOPATH=$GOPATH"
-          echo "Module path:"
-          go mod why -m github.com/lugnut42/openipam
-
+          echo "GO111MODULE=$GO111MODULE"
+          
+      - name: Debug Modules
+        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
+        run: |
+          echo "go.mod contents:"
+          cat go.mod
+          echo "\nDownloading modules..."
+          go mod download -x
+          echo "\nVerifying modules..."
+          go mod verify
+          echo "\nPackage list:"
+          go list ./...
+          
       - name: Run Tests
         working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
         run: |
-          echo "Running go mod download with verbose output..."
-          go mod download -v
-          echo "Running go mod verify..."
-          go mod verify
-          echo "Running go mod why..."
-          go mod why github.com/lugnut42/openipam
-          echo "Running tests..."
           go test -v ./...
