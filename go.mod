@@ -14,3 +14,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 )
+
+// This tells Go to use the local directory instead of trying to fetch from GitHub
+replace github.com/lugnut42/openipam => ./
