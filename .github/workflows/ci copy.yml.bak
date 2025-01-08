@@ -17,13 +17,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: 1.23.4
 
       - name: Cache Go modules
         uses: actions/cache@v3
@@ -35,32 +33,39 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Setup module path
+      - name: Setup Go workspace
         run: |
-          mkdir -p $GITHUB_WORKSPACE/src/openipam
-          cp -r * $GITHUB_WORKSPACE/src/openipam/ || true
-          echo "GOPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          cd $GITHUB_WORKSPACE/src/openipam
+          echo "GOPATH=${GITHUB_WORKSPACE}/go" >> $GITHUB_ENV
+          echo "GOBIN=${GITHUB_WORKSPACE}/go/bin" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/go/bin" >> $GITHUB_PATH
 
-      - name: Update dependencies
-        working-directory: ${{ github.workspace }}/src/openipam
+      # Split out the go mod tidy into its own step
+      - name: Update go.mod
         run: |
-          go mod download
           go mod tidy
+          cat go.mod
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: List workspace
+        run: |
+          pwd
+          ls -la
+          echo "GOPATH=$GOPATH"
+          go env
 
       - name: Run tests
-        working-directory: ${{ github.workspace }}/src/openipam
         run: go test -v ./...
 
       - name: Generate coverage report
-        working-directory: ${{ github.workspace }}/src/openipam
         run: go test -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: ${{ github.workspace }}/src/openipam/coverage.out
+          path: coverage.out
 
   release:
     runs-on: ubuntu-latest
@@ -68,22 +73,16 @@ jobs:
     if: github.event_name == 'release'
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup module path
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/src/openipam
-          cp -r * $GITHUB_WORKSPACE/src/openipam/ || true
-          echo "GOPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          cd $GITHUB_WORKSPACE/src/openipam
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.4
 
       - name: Build binary
-        working-directory: ${{ github.workspace }}/src/openipam
         run: |
-          go mod download
           go mod tidy
           go build -o ipam
 
@@ -104,6 +103,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/src/openipam/ipam
+          asset_path: ./ipam
           asset_name: ipam
           asset_content_type: application/octet-stream
