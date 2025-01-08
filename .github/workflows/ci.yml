@@ -10,6 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Go workspace
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/go/src/github.com/lugnut42
+          echo "GOPATH=$GITHUB_WORKSPACE/go" >> $GITHUB_ENV
+          
       - uses: actions/checkout@v3
         with:
           path: go/src/github.com/lugnut42/openipam
@@ -18,15 +23,25 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
+          check-latest: true
 
-      - name: Debug Info
+      - name: Debug Information
+        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
         run: |
-          echo "PWD: $(pwd)"
-          echo "GOPATH: $GOPATH"
-          ls -la go/src/github.com/lugnut42/openipam/
-        
-      - name: Test
-        working-directory: go/src/github.com/lugnut42/openipam
+          pwd
+          ls -la
+          echo "GOPATH=$GOPATH"
+          echo "Module path:"
+          go mod why -m github.com/lugnut42/openipam
+
+      - name: Run Tests
+        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
         run: |
-          go mod download
+          echo "Running go mod download with verbose output..."
+          go mod download -v
+          echo "Running go mod verify..."
+          go mod verify
+          echo "Running go mod why..."
+          go mod why github.com/lugnut42/openipam
+          echo "Running tests..."
           go test -v ./...

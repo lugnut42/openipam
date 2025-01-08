@@ -3,10 +3,13 @@ module github.com/lugnut42/openipam
 go 1.21
 
 require (
+	github.com/lugnut42/openipam v0.0.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+replace github.com/lugnut42/openipam => ./
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
