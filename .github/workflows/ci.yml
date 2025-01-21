@@ -3,52 +3,126 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+      
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Run golangci-lint
+        run: golangci-lint run ./...
+
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go workspace
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/go/src/github.com/lugnut42
-          echo "GOPATH=$GITHUB_WORKSPACE/go" >> $GITHUB_ENV
-          
       - uses: actions/checkout@v3
-        with:
-          path: go/src/github.com/lugnut42/openipam
       
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
-          check-latest: true
+          go-version: '1.23.4'
+          
+      - name: Tidy Go modules
+        run: go mod tidy
 
-      - name: Debug Information
-        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
-        run: |
-          pwd
-          echo "Directory contents:"
-          ls -la
-          echo "Current tree structure:"
-          find . -type f -name "*.go" | sort
-          echo "GOPATH=$GOPATH"
-          echo "GO111MODULE=$GO111MODULE"
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.out
+          flags: unittests
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
           
-      - name: Debug Modules
-        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
-        run: |
-          echo "go.mod contents:"
-          cat go.mod
-          echo "\nDownloading modules..."
-          go mod download -x
-          echo "\nVerifying modules..."
-          go mod verify
-          echo "\nPackage list:"
-          go list ./...
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
           
-      - name: Run Tests
-        working-directory: ${{ github.workspace }}/go/src/github.com/lugnut42/openipam
+      - name: Run nancy for dependency scanning
         run: |
-          go test -v ./...
+          go list -json -m all | docker run --rm -i sonatypecommunity/nancy:latest sleuth
+
+  build:
+    needs: [lint, test] # remark security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+          
+      - name: Build binary
+        run: |
+          go mod download
+          go build -v -o ipam
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ipam
+          path: ipam
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+
+      - name: Build binary
+        run: |
+          go mod download
+          go build -v -o ipam
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ipam
+          asset_name: ipam
+          asset_content_type: application/octet-stream

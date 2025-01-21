@@ -105,7 +105,13 @@ func init() {
 	rootCmd.AddCommand(blockCmd)
 	blockCmd.AddCommand(blockListCmd)
 	blockAddCmd.Flags().StringP("cidr", "c", "", "CIDR block (required)")
-	blockAddCmd.MarkFlagRequired("cidr")
+
+	//blockAddCmd.MarkFlagRequired("cidr")
+	if err := blockAddCmd.MarkFlagRequired("cidr"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+
 	blockAddCmd.Flags().StringP("description", "d", "", "Description of the block")
 	blockAddCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockAddCmd)

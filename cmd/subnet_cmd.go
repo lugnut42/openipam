@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/lugnut42/openipam/internal/ipam"
 
@@ -26,7 +27,7 @@ var subnetCreateCmd = &cobra.Command{
 
 		err := ipam.CreateSubnet(cfg, block, cidr, name, region)
 		if err != nil {
-			return fmt.Errorf("Error: %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
 
 		fmt.Println("Subnet created successfully!")
@@ -44,7 +45,7 @@ var subnetCreateFromPatternCmd = &cobra.Command{
 
 		err := ipam.CreateSubnetFromPattern(cfg, patternName, fileKey)
 		if err != nil {
-			return fmt.Errorf("Error: %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
 
 		fmt.Println("Subnet created successfully!")
@@ -62,7 +63,7 @@ var subnetDeleteCmd = &cobra.Command{
 
 		err := ipam.DeleteSubnet(cfg, cidr, force)
 		if err != nil {
-			return fmt.Errorf("Error: %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
 
 		fmt.Println("Subnet deleted successfully!")
@@ -80,7 +81,7 @@ var subnetListCmd = &cobra.Command{
 
 		err := ipam.ListSubnets(cfg, block, region)
 		if err != nil {
-			return fmt.Errorf("Error: %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
 		return nil
 	},
@@ -95,7 +96,7 @@ var subnetShowCmd = &cobra.Command{
 
 		err := ipam.ShowSubnet(cfg, cidr)
 		if err != nil {
-			return fmt.Errorf("Error: %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
 		return nil
 	},
@@ -110,25 +111,42 @@ func init() {
 	subnetCmd.AddCommand(subnetShowCmd)
 
 	subnetCreateCmd.Flags().StringP("block", "b", "", "Block CIDR (required)")
-	subnetCreateCmd.MarkFlagRequired("block")
+	if err := subnetCreateCmd.MarkFlagRequired("block"); err != nil {
+		fmt.Println("Error:", err)
+	}
+
 	subnetCreateCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
-	subnetCreateCmd.MarkFlagRequired("cidr")
+	if err := subnetCreateCmd.MarkFlagRequired("cidr"); err != nil {
+		fmt.Println("Error:", err)
+	}
+
 	subnetCreateCmd.Flags().StringP("name", "n", "", "Subnet name (required)")
-	subnetCreateCmd.MarkFlagRequired("name")
+	if err := subnetCreateCmd.MarkFlagRequired("name"); err != nil {
+		fmt.Println("Error:", err)
+	}
+
 	subnetCreateCmd.Flags().StringP("region", "r", "", "Region (required)")
-	subnetCreateCmd.MarkFlagRequired("region")
+	if err := subnetCreateFromPatternCmd.MarkFlagRequired("pattern"); err != nil {
+		fmt.Println("Error:", err)
+	}
 
 	subnetCreateFromPatternCmd.Flags().StringP("pattern", "p", "", "Pattern name (required)")
-	subnetCreateFromPatternCmd.MarkFlagRequired("pattern")
+	if err := subnetCreateFromPatternCmd.MarkFlagRequired("pattern"); err != nil {
+		fmt.Println("Error:", err)
+	}
 	subnetCreateFromPatternCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 
 	subnetDeleteCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
-	subnetDeleteCmd.MarkFlagRequired("cidr")
+	if err := subnetDeleteCmd.MarkFlagRequired("cidr"); err != nil {
+		fmt.Println("Error:", err)
+	}
 	subnetDeleteCmd.Flags().BoolP("force", "f", false, "Force delete")
 
 	subnetListCmd.Flags().StringP("block", "b", "", "Block CIDR")
 	subnetListCmd.Flags().StringP("region", "r", "", "Region")
 
 	subnetShowCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
-	subnetShowCmd.MarkFlagRequired("cidr")
+	if err := subnetDeleteCmd.MarkFlagRequired("cidr"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	}
 }

@@ -22,7 +22,9 @@ func DeleteBlock(cfg *config.Config, cidr string, force bool) error {
 			// Prompt for confirmation if --force is not set
 			var confirmation string
 			fmt.Printf("Are you sure you want to delete block %s? (yes/no): ", cidr)
-			fmt.Scanln(&confirmation)
+			if _, err := fmt.Scanln(&confirmation); err != nil {
+				return err
+			}
 
 			if confirmation != "yes" {
 				return fmt.Errorf("deletion cancelled")

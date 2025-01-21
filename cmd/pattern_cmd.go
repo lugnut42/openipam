@@ -94,24 +94,44 @@ func init() {
 	patternCmd.AddCommand(patternDeleteCmd)
 
 	patternCreateCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
-	patternCreateCmd.MarkFlagRequired("name")
+	if err := patternCreateCmd.MarkFlagRequired("name"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternCreateCmd.Flags().IntP("cidr-size", "c", 0, "CIDR size (required)")
-	patternCreateCmd.MarkFlagRequired("cidr-size")
+	if err := patternCreateCmd.MarkFlagRequired("cidr-size"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternCreateCmd.Flags().StringP("environment", "e", "", "Environment (required)")
-	patternCreateCmd.MarkFlagRequired("environment")
+	if err := patternCreateCmd.MarkFlagRequired("environment"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternCreateCmd.Flags().StringP("region", "r", "", "Region (required)")
-	patternCreateCmd.MarkFlagRequired("region")
+	if err := patternCreateCmd.MarkFlagRequired("region"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternCreateCmd.Flags().StringP("block", "b", "", "Block CIDR (required)")
-	patternCreateCmd.MarkFlagRequired("block")
+	if err := patternCreateCmd.MarkFlagRequired("block"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternCreateCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 
 	patternListCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 
 	patternShowCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
-	patternShowCmd.MarkFlagRequired("name")
+	if err := patternShowCmd.MarkFlagRequired("name"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 
-	patternDeleteCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
-	patternDeleteCmd.MarkFlagRequired("name")
+	if err := patternDeleteCmd.MarkFlagRequired("name"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 	patternDeleteCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 }

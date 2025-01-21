@@ -10,3 +10,8 @@ var cfg *config.Config
 func SetConfig(config *config.Config) {
 	cfg = config
 }
+
+// GetConfig returns the global configuration
+func GetConfig() *config.Config {
+	return cfg
+}

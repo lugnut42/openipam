@@ -1,14 +1,22 @@
 # Go parameters
 GOCMD=go
 GOBUILD=$(GOCMD) build
+GOTEST=$(GOCMD) test
+GOLANGCI_LINT=golangci-lint
 BINARY_NAME=ipam
 
-all: build
+all: lint test build
 
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-clean:
-	rm -f $(BINARY_NAME)
+lint:
+	$(GOLANGCI_LINT) run ./...
 
-.PHONY: all build clean
+test:
+	$(GOTEST) -race -coverprofile=coverage.out -covermode=atomic ./...
+
+clean:
+	rm -f $(BINARY_NAME) coverage.out
+
+.PHONY: all build lint test clean
