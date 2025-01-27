@@ -73,37 +73,37 @@ print_result $? true
 
 # Add a block to the configuration
 echo "TEST: Adding block..."
-./ipam block add --cidr 10.0.0.0/8 --file default
+./ipam block create --cidr 10.0.0.0/8 --file default
 print_result $? false
 
 # This should fail because the block already exists
 echo "TEST: Adding block again (should fail)..."
-./ipam block add --cidr 10.0.0.0/8 --file default
+./ipam block create --cidr 10.0.0.0/8 --file default
 print_result $? true
 
 # Attempt to add a block with an invalid CIDR
 echo "TEST: Adding block with invalid CIDR (should fail)..."
-./ipam block add --cidr 10.0.0.0/33 --file default
+./ipam block create --cidr 10.0.0.0/33 --file default
 print_result $? true
 
 # Attempt to add a block that overlaps with an existing block
 echo "TEST: Adding overlapping block (should fail)..."
-./ipam block add --cidr 10.0.0.0/16 --file default
+./ipam block create --cidr 10.0.0.0/16 --file default
 print_result $? true
 
 # Attempt to add a block that is a subset of an existing block
 echo "TEST: Adding subset block (should fail)..."
-./ipam block add --cidr 10.0.0.0/12 --file default
+./ipam block create --cidr 10.0.0.0/12 --file default
 print_result $? true
 
 # Attempt to add a block that is a superset of an existing block
 echo "TEST: Adding superset block (should fail)..."
-./ipam block add --cidr 10.0.0.0/7 --file default
+./ipam block create --cidr 10.0.0.0/7 --file default
 print_result $? true
 
 # Attempt to add a block that is adjacent to an existing block
 echo "TEST: Adding adjacent block..."
-./ipam block add --cidr 11.0.0.0/8 --file default
+./ipam block create --cidr 11.0.0.0/8 --file default
 print_result $? false
 
 # List all blocks
