@@ -43,6 +43,11 @@ var configInitCmd = &cobra.Command{
 			return fmt.Errorf("error creating configuration directory: %w", err)
 		}
 
+		// Check if configuration file already exists
+		if _, err := os.Stat(configFile); err == nil {
+			return fmt.Errorf("configuration file already exists at %s", configFile)
+		}
+
 		// Create an empty block YAML file if it doesn't exist
 		if _, err := os.Stat(blockYAMLFile); os.IsNotExist(err) {
 			err = os.WriteFile(blockYAMLFile, []byte("[]"), 0644)

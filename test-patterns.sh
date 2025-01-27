@@ -34,7 +34,7 @@ fi
 
 # Clean up and fresh build
 make clean
-make
+make build
 
 # Print the IPAM_CONFIG_PATH environment variable
 echo "IPAM_CONFIG_PATH: $IPAM_CONFIG_PATH"
