@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/lugnut42/openipam/internal/config"
 	"github.com/lugnut42/openipam/internal/ipam"
+	"github.com/lugnut42/openipam/internal/logger"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +26,7 @@ var configInitCmd = &cobra.Command{
 		configFile, _ := cmd.Flags().GetString("config")
 		blockYAMLFile, _ := cmd.Flags().GetString("block-yaml-file")
 
-		log.Printf("DEBUG: Config init called with config=%s, block-yaml=%s", configFile, blockYAMLFile)
+		logger.Debug("Config init called with config=%s, block-yaml=%s", configFile, blockYAMLFile)
 
 		if configFile == "" {
 			return fmt.Errorf("configuration file path is required")
@@ -69,7 +69,7 @@ var configInitCmd = &cobra.Command{
 		fmt.Printf("Configuration file created successfully at %s\n", configFile)
 		fmt.Printf("Block YAML file created successfully at %s\n", blockYAMLFile)
 
-		log.Printf("DEBUG: Config initialization complete. Config=%+v", cfg)
+		logger.Debug("Config initialization complete. Config=%+v", cfg)
 		return nil
 	},
 }

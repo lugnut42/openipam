@@ -16,15 +16,15 @@ func TestBlockCommands(t *testing.T) {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llongfile)
 
 	tempDir := t.TempDir()
-	log.Printf("DEBUG: Created temp directory at: %s", tempDir)
+	debugLog("Created temp directory at: %s", tempDir)
 
 	configFilePath := filepath.Join(tempDir, "ipam-config.yaml")
 	blockFilePath := filepath.Join(tempDir, "ip-blocks.yaml")
-	log.Printf("DEBUG: Config file path: %s", configFilePath)
-	log.Printf("DEBUG: Block file path: %s", blockFilePath)
+	debugLog("Config file path: %s", configFilePath)
+	debugLog("Block file path: %s", blockFilePath)
 
 	initConfig := func() {
-		log.Printf("DEBUG: Starting initConfig()")
+		debugLog("Starting initConfig()")
 
 		// Create a new config instance
 		cfg = &config.Config{
@@ -36,9 +36,9 @@ func TestBlockCommands(t *testing.T) {
 		rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
 		rootCmd.AddCommand(configCmd)
 
-		log.Printf("DEBUG: About to execute config init command")
+		debugLog("About to execute config init command")
 		initArgs := []string{"config", "init", "--config", configFilePath, "--block-yaml-file", blockFilePath}
-		log.Printf("DEBUG: Config init args: %v", initArgs)
+		debugLog("Config init args: %v", initArgs)
 		rootCmd.SetArgs(initArgs)
 
 		err := rootCmd.Execute()
@@ -48,7 +48,7 @@ func TestBlockCommands(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Create a block YAML file with valid initial structure
-		log.Printf("DEBUG: Writing initial block file content")
+		debugLog("Writing initial block file content")
 		initialBlockContent := `[]`
 		err = os.WriteFile(blockFilePath, []byte(initialBlockContent), 0644)
 		if err != nil {
@@ -61,7 +61,7 @@ func TestBlockCommands(t *testing.T) {
 		if err != nil {
 			log.Printf("ERROR: Failed to read config file: %v", err)
 		} else {
-			log.Printf("DEBUG: Config file contents:\n%s", string(configContent))
+			debugLog("Config file contents:\n%s", string(configContent))
 		}
 		assert.NoError(t, err)
 
@@ -69,29 +69,29 @@ func TestBlockCommands(t *testing.T) {
 		if err != nil {
 			log.Printf("ERROR: Failed to read block file: %v", err)
 		} else {
-			log.Printf("DEBUG: Block file contents:\n%s", string(blockContent))
+			debugLog("Block file contents:\n%s", string(blockContent))
 		}
 		assert.NoError(t, err)
 
-		log.Printf("DEBUG: Completed initConfig()")
+		debugLog("Completed initConfig()")
 	}
 
 	initConfig()
 
 	executeCommand := func(args ...string) error {
-		log.Printf("DEBUG: Executing command with args: %v", args)
+		debugLog("Executing command with args: %v", args)
 		rootCmd := &cobra.Command{Use: "ipam"}
 
 		// Important: Set up the persistent pre-run hook
 		rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-			log.Printf("DEBUG: PreRun hook - Loading config from: %s", configFilePath)
+			debugLog("PreRun hook - Loading config from: %s", configFilePath)
 			var err error
 			cfg, err = config.LoadConfig(configFilePath)
 			if err != nil {
 				log.Printf("ERROR: Failed to load config in PreRun: %v", err)
 				return err
 			}
-			log.Printf("DEBUG: PreRun hook - Loaded config: %+v", cfg)
+			debugLog("PreRun hook - Loaded config: %+v", cfg)
 			return nil
 		}
 
@@ -103,13 +103,13 @@ func TestBlockCommands(t *testing.T) {
 		if err != nil {
 			log.Printf("ERROR: Command execution failed: %v", err)
 		} else {
-			log.Printf("DEBUG: Command executed successfully")
+			debugLog("Command executed successfully")
 		}
 		return err
 	}
 
 	t.Run("block add", func(t *testing.T) {
-		log.Printf("DEBUG: Starting 'block add' test")
+		debugLog("Starting 'block add' test")
 
 		// Add additional validation
 		_, err := os.Stat(configFilePath)
@@ -120,7 +120,7 @@ func TestBlockCommands(t *testing.T) {
 
 		configContent, err := os.ReadFile(configFilePath)
 		assert.NoError(t, err)
-		log.Printf("DEBUG: Config file contents before block add:\n%s", string(configContent))
+		debugLog("Config file contents before block add:\n%s", string(configContent))
 
 		err = executeCommand("block", "add", "--cidr", "10.0.0.0/16", "--description", "Test Block", "--file", "default")
 		assert.NoError(t, err)
@@ -128,7 +128,7 @@ func TestBlockCommands(t *testing.T) {
 		// Verify block was added
 		blockContent, err := os.ReadFile(blockFilePath)
 		assert.NoError(t, err)
-		log.Printf("DEBUG: Block file contents after add:\n%s", string(blockContent))
+		debugLog("Block file contents after add:\n%s", string(blockContent))
 	})
 
 	// Rest of the tests...

@@ -2,15 +2,15 @@ package ipam
 
 import (
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/lugnut42/openipam/internal/config"
+	"github.com/lugnut42/openipam/internal/logger"
 )
 
 // CreateSubnetFromPattern creates a new subnet from a pattern
 func CreateSubnetFromPattern(cfg *config.Config, patternName, fileKey string) error {
-	log.Printf("Creating subnet from pattern: patternName=%s, fileKey=%s", patternName, fileKey)
+	logger.Debug("Creating subnet from pattern: patternName=%s, fileKey=%s", patternName, fileKey)
 
 	patterns, ok := cfg.Patterns[fileKey]
 	if !ok {
@@ -51,7 +51,7 @@ func CreateSubnetFromPattern(cfg *config.Config, patternName, fileKey string) er
 
 	// Check for available space in the block
 	availableCIDRs := calculateAvailableCIDRs(block)
-	log.Printf("Available CIDRs in block %s: %v", block.CIDR, availableCIDRs)
+	logger.Debug("Available CIDRs in block %s: %v", block.CIDR, availableCIDRs)
 	if len(availableCIDRs) == 0 {
 		return fmt.Errorf("no available CIDR found in block %s", block.CIDR)
 	}
@@ -90,6 +90,6 @@ func CreateSubnetFromPattern(cfg *config.Config, patternName, fileKey string) er
 		return fmt.Errorf("error writing YAML file: %w", err)
 	}
 
-	log.Printf("Subnet created successfully from pattern: %s", newSubnetCIDR)
+	logger.Debug("Subnet created successfully from pattern: %s", newSubnetCIDR)
 	return nil
 }

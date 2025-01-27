@@ -3,15 +3,15 @@ package ipam
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/lugnut42/openipam/internal/config"
+	"github.com/lugnut42/openipam/internal/logger"
 )
 
 // CreateSubnet creates a new subnet within a block
 func CreateSubnet(cfg *config.Config, blockCIDR, subnetCIDR, name, region string) error {
-	log.Printf("Creating subnet: blockCIDR=%s, subnetCIDR=%s, name=%s, region=%s", blockCIDR, subnetCIDR, name, region)
+	logger.Debug("Creating subnet: blockCIDR=%s, subnetCIDR=%s, name=%s, region=%s", blockCIDR, subnetCIDR, name, region)
 
 	for _, blockFile := range cfg.BlockFiles {
 		yamlData, err := readYAMLFile(blockFile)
@@ -52,7 +52,7 @@ func CreateSubnet(cfg *config.Config, blockCIDR, subnetCIDR, name, region string
 			if block.CIDR == blockCIDR {
 				// Check for available space in the block
 				availableCIDRs := calculateAvailableCIDRs(&block)
-				log.Printf("Available CIDRs in block %s: %v", blockCIDR, availableCIDRs)
+				logger.Debug("Available CIDRs in block %s: %v", blockCIDR, availableCIDRs)
 				if len(availableCIDRs) == 0 {
 					return fmt.Errorf("no available CIDR found in block %s", block.CIDR)
 				}
@@ -85,7 +85,7 @@ func CreateSubnet(cfg *config.Config, blockCIDR, subnetCIDR, name, region string
 				return err
 			}
 
-			log.Printf("Subnet created successfully: %s", subnetCIDR)
+			logger.Debug("Subnet created successfully: %s", subnetCIDR)
 			return nil
 		}
 	}

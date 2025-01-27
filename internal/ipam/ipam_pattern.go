@@ -2,13 +2,13 @@ package ipam
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/lugnut42/openipam/internal/config"
+	"github.com/lugnut42/openipam/internal/logger"
 )
 
 func CreatePattern(cfg *config.Config, name string, cidrSize int, environment, region, block, fileKey string) error {
-	log.Printf("Creating pattern: %s", name)
+	logger.Debug("Creating pattern: %s", name)
 	if cfg.Patterns == nil {
 		cfg.Patterns = make(map[string]map[string]config.Pattern)
 	}
@@ -63,12 +63,12 @@ func CreatePattern(cfg *config.Config, name string, cidrSize int, environment, r
 	}
 
 	patterns[name] = pattern
-	log.Printf("Pattern created: %+v", pattern)
+	logger.Debug("Pattern created: %+v", pattern)
 	return config.WriteConfig(cfg)
 }
 
 func ListPatterns(cfg *config.Config, fileKey string) error {
-	log.Printf("Listing patterns for file key: %s", fileKey)
+	logger.Debug("Listing patterns for file key: %s", fileKey)
 	patterns, ok := cfg.Patterns[fileKey]
 	if !ok {
 		return fmt.Errorf("no patterns found for file key %s", fileKey)
@@ -82,7 +82,7 @@ func ListPatterns(cfg *config.Config, fileKey string) error {
 }
 
 func ShowPattern(cfg *config.Config, name, fileKey string) error {
-	log.Printf("Showing pattern: %s", name)
+	logger.Debug("Showing pattern: %s", name)
 	patterns, ok := cfg.Patterns[fileKey]
 	if !ok {
 		return fmt.Errorf("no patterns found for file key %s", fileKey)
@@ -99,7 +99,7 @@ func ShowPattern(cfg *config.Config, name, fileKey string) error {
 }
 
 func DeletePattern(cfg *config.Config, name, fileKey string) error {
-	log.Printf("Deleting pattern: %s", name)
+	logger.Debug("Deleting pattern: %s", name)
 	patterns, ok := cfg.Patterns[fileKey]
 	if !ok {
 		return fmt.Errorf("no patterns found for file key %s", fileKey)
@@ -110,6 +110,6 @@ func DeletePattern(cfg *config.Config, name, fileKey string) error {
 	}
 
 	delete(patterns, name)
-	log.Printf("Pattern deleted: %s", name)
+	logger.Debug("Pattern deleted: %s", name)
 	return config.WriteConfig(cfg)
 }

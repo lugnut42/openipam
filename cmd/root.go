@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/lugnut42/openipam/internal/ipam"
-
+	"github.com/lugnut42/openipam/internal/logger"
 	"github.com/lugnut42/openipam/internal/config"
 
 	"github.com/spf13/cobra"
@@ -14,55 +14,39 @@ import (
 
 var cfgFile string
 var cfg *config.Config
+var debugMode bool
 
 var rootCmd = &cobra.Command{
 	Use:   "ipam",
 	Short: "IP Address Management tool",
-	Long: `IP Address Management tool for managing IP blocks, subnets, and allocation patterns.
+	Long: `IP Address Management tool for managing IP blocks and subnets.
 
 To get started, you need to initialize the configuration file using one of the following methods:
 
 1. Using the IPAM_CONFIG_PATH environment variable:
-   export IPAM_CONFIG_PATH=/path/to/ipam-config.yaml
-   ipam config init --config $IPAM_CONFIG_PATH --block-yaml-file /path/to/blocks.yaml
+  export IPAM_CONFIG_PATH=/path/to/ipam-config.yaml
+  ipam config init
 
 2. Using the --config flag:
-   ipam config init --config /path/to/ipam-config.yaml --block-yaml-file /path/to/blocks.yaml
+  ipam config init --config /path/to/ipam-config.yaml
 
-The tool provides commands for managing:
-- IP Blocks: create, list, show, delete, and check available ranges
-- Subnets: create, list, show, and delete
-- Patterns: create templates for subnet allocation with predefined settings`,
-
-	Example: `  # Initialize configuration
-  ipam config init --config /path/to/ipam-config.yaml --block-yaml-file /path/to/blocks.yaml
-
-  # Manage blocks
-  ipam block create --cidr 10.0.0.0/16 --description "Main Datacenter"
-  ipam block show 10.0.0.0/16
-  ipam block available 10.0.0.0/16
-
-  # Manage subnets
-  ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name "app-tier" --region us-east1
-  ipam subnet list --block 10.0.0.0/16 --region us-east1
-
-  # Use patterns
-  ipam pattern create --name dev-cluster --cidr-size 24 --environment dev --region us-west1 --block 10.0.0.0/16
-  ipam subnet create-from-pattern --pattern dev-cluster`,
-
+You can then use the following commands to manage IP blocks and subnets:
+  ipam block create --cidr <CIDR> --name <n>
+  ipam subnet create --block <block CIDR> --cidr <CIDR> --name <n>`,
+	Example: `  ipam config init --config /path/to/ipam-config.yaml
+  ipam block create --cidr 10.0.0.0/16 --name main-datacenter
+  ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name app-tier`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		//log.Printf("DEBUG: PersistentPreRunE called for command: %s", cmd.Name())
-		log.Printf("DEBUG: Current cfgFile value: %s", cfgFile)
-		log.Printf("DEBUG: Current cfg value: %+v", cfg)
+		// Set debug mode in logger package
+		logger.SetDebugMode(debugMode)
 
-		// Skip validation for help commands
-		if cmd.Name() == "help" || len(args) > 0 && args[0] == "help" {
-			return nil
-		}
+		logger.Debug("PersistentPreRunE called for command: %s", cmd.Name())
+		logger.Debug("Current cfgFile value: %s", cfgFile)
+		logger.Debug("Current cfg value: %+v", cfg)
 
 		// Skip configuration check for "config init" command
 		if cmd.Name() == "init" && cmd.Parent() != nil && cmd.Parent().Name() == "config" {
-			log.Printf("DEBUG: Skipping config check for config init command")
+			logger.Debug("Skipping config check for config init command")
 			return nil
 		}
 
@@ -70,14 +54,14 @@ The tool provides commands for managing:
 		if cfgFile == "" {
 			// Check for environment variable
 			envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
-			log.Printf("DEBUG: Environment IPAM_CONFIG_PATH: %s", envConfigPath)
+			logger.Debug("Environment IPAM_CONFIG_PATH: %s", envConfigPath)
 			if envConfigPath == "" {
 				return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
 			}
 			cfgFile = envConfigPath
 		}
 
-		log.Printf("DEBUG: Using config file: %s", cfgFile)
+		logger.Debug("Using config file: %s", cfgFile)
 
 		// Check if the configuration file exists
 		if _, err := os.Stat(cfgFile); os.IsNotExist(err) {
@@ -86,17 +70,17 @@ The tool provides commands for managing:
 		}
 
 		// Load the configuration
-		log.Printf("DEBUG: Loading configuration from %s", cfgFile)
+		logger.Debug("Loading configuration from %s", cfgFile)
 		var err error
 		cfg, err = config.LoadConfig(cfgFile)
 		if err != nil {
 			log.Printf("ERROR: Failed to load config: %v", err)
 			return fmt.Errorf("error loading config file: %v", err)
 		}
-		log.Printf("DEBUG: Loaded config: %+v", cfg)
+		logger.Debug("Loaded config: %+v", cfg)
 
 		// Set the configuration in the ipam package
-		log.Printf("DEBUG: Setting config in ipam package")
+		logger.Debug("Setting config in ipam package")
 		ipam.SetConfig(cfg)
 
 		return nil
@@ -112,8 +96,9 @@ func Execute() {
 }
 
 func init() {
-	log.Printf("DEBUG: Initializing root command")
+	logger.Debug("Initializing root command")
 	cfg = &config.Config{}
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
-	log.Printf("DEBUG: Root command initialized with empty config: %+v", cfg)
+	rootCmd.PersistentFlags().BoolVar(&debugMode, "debug", false, "Enable debug logging")
+	logger.Debug("Root command initialized with empty config: %+v", cfg)
 }
