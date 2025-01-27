@@ -129,6 +129,8 @@ func init() {
 	}
 	patternShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 
+	patternDeleteCmd.Flags().StringP("name", "n", "", "Pattern name (required)")
+	// Then mark it as required
 	if err := patternDeleteCmd.MarkFlagRequired("name"); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)

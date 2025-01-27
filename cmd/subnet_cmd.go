@@ -126,7 +126,7 @@ func init() {
 	}
 
 	subnetCreateCmd.Flags().StringP("region", "r", "", "Region (required)")
-	if err := subnetCreateFromPatternCmd.MarkFlagRequired("pattern"); err != nil {
+	if err := subnetCreateCmd.MarkFlagRequired("region"); err != nil {
 		fmt.Println("Error:", err)
 	}
 
@@ -140,13 +140,13 @@ func init() {
 	if err := subnetDeleteCmd.MarkFlagRequired("cidr"); err != nil {
 		fmt.Println("Error:", err)
 	}
-	subnetDeleteCmd.Flags().BoolP("force", "f", false, "Force delete")
 
+	subnetDeleteCmd.Flags().BoolP("force", "f", false, "Force delete")
 	subnetListCmd.Flags().StringP("block", "b", "", "Block CIDR")
 	subnetListCmd.Flags().StringP("region", "r", "", "Region")
 
 	subnetShowCmd.Flags().StringP("cidr", "c", "", "Subnet CIDR (required)")
-	if err := subnetDeleteCmd.MarkFlagRequired("cidr"); err != nil {
+	if err := subnetShowCmd.MarkFlagRequired("cidr"); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	}
 }

@@ -13,7 +13,7 @@ import (
 var blockCmd = &cobra.Command{
 	Use:   "block",
 	Short: "Manage IP blocks",
-	Long:  `Add, list, show, and delete IP blocks.`,
+	Long:  `Create, list, show, and delete IP blocks.`,
 }
 
 var blockListCmd = &cobra.Command{
@@ -29,10 +29,11 @@ var blockListCmd = &cobra.Command{
 	},
 }
 
-var blockAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a new IP block",
-	Long:  `Add a new IP block to the YAML file.`,
+var blockCreateCmd = &cobra.Command{
+	//var blockCreateCmd = &cobra.Command{
+	Use:   "create",
+	Short: "Create a new IP block",
+	Long:  `Create a new IP block to the YAML file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cidr, _ := cmd.Flags().GetString("cidr")
 		description, _ := cmd.Flags().GetString("description")
@@ -104,17 +105,17 @@ var blockAvailableCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(blockCmd)
 	blockCmd.AddCommand(blockListCmd)
-	blockAddCmd.Flags().StringP("cidr", "c", "", "CIDR block (required)")
+	blockCreateCmd.Flags().StringP("cidr", "c", "", "CIDR block (required)")
 
-	//blockAddCmd.MarkFlagRequired("cidr")
-	if err := blockAddCmd.MarkFlagRequired("cidr"); err != nil {
+	//blockCreateCmd.MarkFlagRequired("cidr")
+	if err := blockCreateCmd.MarkFlagRequired("cidr"); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
 
-	blockAddCmd.Flags().StringP("description", "d", "", "Description of the block")
-	blockAddCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
-	blockCmd.AddCommand(blockAddCmd)
+	blockCreateCmd.Flags().StringP("description", "d", "", "Description of the block")
+	blockCreateCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+	blockCmd.AddCommand(blockCreateCmd)
 	blockShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockShowCmd)
 	blockDeleteCmd.Flags().BoolP("force", "f", false, "Force deletion without confirmation")

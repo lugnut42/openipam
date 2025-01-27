@@ -6,94 +6,79 @@
    - **Description**: Established a well-organized project structure using Cobra and internal packages.
    - **Status**: Completed
    - **Acceptance Criteria**:
-     - Project structure follows best practices for Go projects.
-     - Commands are organized using Cobra.
-     - Internal packages are used for core logic.
+     - Project structure follows best practices for Go projects ✓
+     - Commands are organized using Cobra ✓
+     - Internal packages are used for core logic ✓
 
-2. **Block Management**
-   - **Description**: Implemented `block add`, `block list`, `block show`, and `block delete` commands.
+2. **Configuration Management**
+   - **Description**: Implemented configuration initialization and management.
    - **Status**: Completed
    - **Acceptance Criteria**:
-     - `block add` command adds new blocks.
-     - `block list` command lists all blocks.
-     - `block show` command shows details of a specific block.
-     - `block delete` command deletes a block.
+     - `config init` command creates configuration file ✓
+     - Supports environment variable (IPAM_CONFIG_PATH) and --config flag ✓
+     - Configuration includes block file paths and patterns ✓
 
-3. **Subnet Management**
-   - **Description**: Implemented `subnet create`, `subnet list`, `subnet show`, and `subnet delete` commands, including basic CIDR validation.
+3. **Block Management**
+   - **Description**: Implemented block management commands.
    - **Status**: Completed
    - **Acceptance Criteria**:
-     - `subnet create` command creates new subnets with CIDR validation.
-     - `subnet list` command lists all subnets.
-     - `subnet show` command shows details of a specific subnet.
-     - `subnet delete` command deletes a subnet.
+     - `block create` creates new blocks with CIDR and description ✓
+     - `block list` displays all blocks ✓
+     - `block show` shows details of a specific block ✓
+     - `block delete` removes blocks with optional force flag ✓
+     - `block available` lists available CIDR ranges within a block ✓
 
-4. **Pattern Management**
-   - **Description**: Implemented `pattern create`, `pattern list`, `pattern show`, and `pattern delete` commands.
+4. **Subnet Management**
+   - **Description**: Implemented subnet management commands.
    - **Status**: Completed
    - **Acceptance Criteria**:
-     - `pattern create` command creates new patterns.
-     - `pattern list` command lists all patterns.
-     - `pattern show` command shows details of a specific pattern.
-     - `pattern delete` command deletes a pattern.
+     - `subnet create` creates subnets with block, CIDR, name, and region ✓
+     - `subnet create-from-pattern` creates subnets using patterns ✓
+     - `subnet list` shows subnets with optional block and region filters ✓
+     - `subnet show` displays subnet details ✓
+     - `subnet delete` removes subnets with optional force flag ✓
 
-5. **Configuration File**
-   - **Description**: Introduced `ipam-config.yaml` for storing configuration settings.
+5. **Pattern Management**
+   - **Description**: Implemented pattern management commands.
    - **Status**: Completed
    - **Acceptance Criteria**:
-     - Configuration settings are stored in `ipam-config.yaml`.
-     - Commands read configuration from `ipam-config.yaml`.
-
-6. **Error Handling**
-   - **Description**: Implemented robust error handling and informative error messages.
-   - **Status**: Completed
-   - **Acceptance Criteria**:
-     - Commands provide informative error messages.
-     - Error handling follows Go best practices.
-
-7. **Testing**
-   - **Description**: Implemented tests for the `config` commands.
-   - **Status**: Completed
-   - **Acceptance Criteria**:
-     - `config` commands have unit tests covering normal cases, edge cases, and error handling.
+     - `pattern create` creates patterns with name, CIDR size, environment, region, and block ✓
+     - `pattern list` shows all patterns ✓
+     - `pattern show` displays pattern details ✓
+     - `pattern delete` removes patterns ✓
 
 ## Outstanding Tasks
 
 1. **Increase Test Coverage**
-   - **Description**: Implement additional tests to achieve full test coverage for existing commands and functionality.
+   - **Description**: Implement additional tests to achieve full test coverage.
    - **Status**: Pending
    - **Acceptance Criteria**:
-     - All commands have unit tests covering normal cases, edge cases, and error handling.
-     - Test coverage report shows 100% coverage for command-related code.
-   - **Specific Areas to Cover**:
-     - `cmd/block_cmd.go`: Increase coverage from 43.2% to 100%.
-     - `cmd/root.go`: Increase coverage from 11.8% to 100%.
-     - `internal/ipam/ipam_block_add.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_block_delete.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_block_list.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_block_show.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_config.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_pattern.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_subnet.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_subnet_create.go`: Increase coverage from 20.9% to 100%.
-     - `internal/ipam/ipam_subnet_create_from_pattern.go`: Increase coverage from 44.7% to 100%.
-     - `internal/ipam/ipam_subnet_delete.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_subnet_list.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/ipam_subnet_show.go`: Increase coverage from 0.0% to 100%.
-     - `internal/ipam/util.go`: Increase coverage from 77.1% to 100%.
-     - `main.go`: Increase coverage from 0.0% to 100%.
+     - All commands have unit tests covering normal cases, edge cases, and error handling
+     - Test coverage reaches 100% for all packages
+   - **Files Needing Coverage**:
+     - cmd/block_cmd.go
+     - cmd/root.go
+     - cmd/subnet_cmd.go
+     - cmd/pattern_cmd.go
+     - cmd/config_cmd.go
+     - All files in internal/ipam/
+     - main.go
 
-2. **Review and Refactor Code**
-   - **Description**: Review the codebase for any duplicated or redundant code. Refactor as necessary to improve readability and maintainability.
-   - **Status**: Pending
+2. **Documentation Update**
+   - **Description**: Update and improve documentation.
+   - **Status**: In Progress
    - **Acceptance Criteria**:
-     - Codebase is free of duplicated or redundant code.
-     - Functions and methods have appropriate comments and documentation.
-     - Error messages follow Go conventions (e.g., not capitalized, no punctuation).
+     - Documentation reflects current command implementations
+     - Examples provided for all commands
+     - Configuration guide updated
+     - Usage patterns documented
 
-3. **Update Documentation**
-   - **Description**: Ensure that the `README.md` and other documentation files reflect the current state of the codebase. Include examples and usage instructions for all commands.
+3. **Code Refinement**
+   - **Description**: Review and refine existing codebase.
    - **Status**: Pending
    - **Acceptance Criteria**:
-     - `README.md` includes up-to-date examples and usage instructions for all commands.
-     - Documentation files are consistent with the current state of the codebase.
+     - Consistent error handling across all commands
+     - Code duplication eliminated
+     - Improved input validation
+     - Better error messages
+     - Standardized logging

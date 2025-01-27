@@ -18,27 +18,47 @@ var cfg *config.Config
 var rootCmd = &cobra.Command{
 	Use:   "ipam",
 	Short: "IP Address Management tool",
-	Long: `IP Address Management tool for managing IP blocks and subnets.
+	Long: `IP Address Management tool for managing IP blocks, subnets, and allocation patterns.
 
 To get started, you need to initialize the configuration file using one of the following methods:
 
 1. Using the IPAM_CONFIG_PATH environment variable:
-  export IPAM_CONFIG_PATH=/path/to/ipam-config.yaml
-  ipam config init
+   export IPAM_CONFIG_PATH=/path/to/ipam-config.yaml
+   ipam config init --config $IPAM_CONFIG_PATH --block-yaml-file /path/to/blocks.yaml
 
 2. Using the --config flag:
-  ipam config init --config /path/to/ipam-config.yaml
+   ipam config init --config /path/to/ipam-config.yaml --block-yaml-file /path/to/blocks.yaml
 
-You can then use the following commands to manage IP blocks and subnets:
-  ipam block create --cidr <CIDR> --name <n>
-  ipam subnet create --block <block CIDR> --cidr <CIDR> --name <n>`,
-	Example: `  ipam config init --config /path/to/ipam-config.yaml
-  ipam block create --cidr 10.0.0.0/16 --name main-datacenter
-  ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name app-tier`,
+The tool provides commands for managing:
+- IP Blocks: create, list, show, delete, and check available ranges
+- Subnets: create, list, show, and delete
+- Patterns: create templates for subnet allocation with predefined settings`,
+
+	Example: `  # Initialize configuration
+  ipam config init --config /path/to/ipam-config.yaml --block-yaml-file /path/to/blocks.yaml
+
+  # Manage blocks
+  ipam block create --cidr 10.0.0.0/16 --description "Main Datacenter"
+  ipam block show 10.0.0.0/16
+  ipam block available 10.0.0.0/16
+
+  # Manage subnets
+  ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name "app-tier" --region us-east1
+  ipam subnet list --block 10.0.0.0/16 --region us-east1
+
+  # Use patterns
+  ipam pattern create --name dev-cluster --cidr-size 24 --environment dev --region us-west1 --block 10.0.0.0/16
+  ipam subnet create-from-pattern --pattern dev-cluster`,
+
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		log.Printf("DEBUG: PersistentPreRunE called for command: %s", cmd.Name())
+		//log.Printf("DEBUG: PersistentPreRunE called for command: %s", cmd.Name())
 		log.Printf("DEBUG: Current cfgFile value: %s", cfgFile)
 		log.Printf("DEBUG: Current cfg value: %+v", cfg)
+
+		// Skip validation for help commands
+		if cmd.Name() == "help" || len(args) > 0 && args[0] == "help" {
+			return nil
+		}
 
 		// Skip configuration check for "config init" command
 		if cmd.Name() == "init" && cmd.Parent() != nil && cmd.Parent().Name() == "config" {
