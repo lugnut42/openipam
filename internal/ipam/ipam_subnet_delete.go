@@ -2,12 +2,23 @@ package ipam
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/lugnut42/openipam/internal/config"
 )
 
 // DeleteSubnet deletes a subnet from a block
 func DeleteSubnet(cfg *config.Config, subnetCIDR string, force bool) error {
+	// Check if the force flag is set
+	if !force {
+		return fmt.Errorf("deletion requires --force flag for confirmation")
+	}
+
+	// Add CIDR validation here, before any file operations
+	if _, _, err := net.ParseCIDR(subnetCIDR); err != nil {
+		return fmt.Errorf("invalid subnet CIDR: %v", err)
+	}
+
 	subnetFound := false
 
 	for _, blockFile := range cfg.BlockFiles {

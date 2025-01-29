@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/lugnut42/openipam/internal/config"
 	"github.com/lugnut42/openipam/internal/ipam"
 	"github.com/lugnut42/openipam/internal/logger"
-	"github.com/lugnut42/openipam/internal/config"
 
 	"github.com/spf13/cobra"
 )
@@ -50,16 +51,31 @@ You can then use the following commands to manage IP blocks and subnets:
 			return nil
 		}
 
-		// Check for --config flag
-		if cfgFile == "" {
-			// Check for environment variable
-			envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
-			logger.Debug("Environment IPAM_CONFIG_PATH: %s", envConfigPath)
-			if envConfigPath == "" {
-				return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
-			}
-			cfgFile = envConfigPath
+		// Skip configuration check for "config add-block" command
+		if cmd.Name() == "add-block" && cmd.Parent() != nil && cmd.Parent().Name() == "config" {
+			logger.Debug("Skipping config check for config add-block command")
+			return nil
 		}
+
+		// // Check for --config flag
+		// if cfgFile == "" {
+		// 	// Check for environment variable
+		// 	envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
+		// 	logger.Debug("Environment IPAM_CONFIG_PATH: %s", envConfigPath)
+		// 	if envConfigPath == "" {
+		// 		return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
+		// 	}
+		// 	cfgFile = envConfigPath
+		// }
+
+		// Get configuration directory
+		configDir := os.Getenv("IPAM_CONFIG_PATH")
+		if configDir == "" {
+			return fmt.Errorf("IPAM_CONFIG_PATH environment variable is required")
+		}
+
+		// Construct config file path
+		cfgFile = filepath.Join(configDir, "ipam-config.yaml")
 
 		logger.Debug("Using config file: %s", cfgFile)
 

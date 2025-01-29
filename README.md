@@ -4,14 +4,22 @@ OpenIPAM is a command-line tool for managing IP address blocks and subnets. It p
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Installation](#installation)
-- [Command Reference](#command-reference)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+- [OpenIPAM](#openipam)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [From Source](#from-source)
+  - [Command Reference](#command-reference)
+    - [Configuration Management](#configuration-management)
+    - [Block Management](#block-management)
+    - [Subnet Management](#subnet-management)
+    - [Pattern Management](#pattern-management)
+  - [Configuration](#configuration)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-## Quick Start
+## Getting Started
 
 1. **Build OpenIPAM**:
    ```bash
@@ -20,21 +28,32 @@ OpenIPAM is a command-line tool for managing IP address blocks and subnets. It p
    make build
    ```
 
-2. **Initialize configuration**:
+2. **Initialize Configuration**:
+   To start off we need to initialize ipam.  This will create a configuration file used by ipam to store the location of block files as well as any patterns we want to define.
    ```bash
-   # Set the config path environment variable
-   export IPAM_CONFIG_PATH=$HOME/.openipam/ipam-config.yaml
+    # Initialize with a named block file
+    export IPAM_CONFIG_PATH=$HOME/.openipam
+    ./ipam config init prod    # Creates blocks/prod.yaml as the initial block file in the .openipam directory
+    ```
 
-   # Initialize configuration
-   ipam config init --config $IPAM_CONFIG_PATH --block-yaml-file $HOME/.openipam/blocks.yaml
+3. **Add additional block files**:
+   After completing initialization, you can add additional block files for ipam to manage.  These block files can be used to represent any construct that works for your and your organization, environmets, regions, data classifications, etc.
+   ```
+    # Add additional block files to represent environments.  
+    ipam config add-block test    # Adds blocks/test.yaml
+    ipam config add-block dev     # Adds blocks/dev.yaml
+  ```
+
+4. **Assign IP address blocks.**:
+  Next we assign IP address blocks to be managed to each of the block files
+  ```
+    # Use specific block files in commands
+    ipam block create --cidr 10.0.0.0/16 --description "Production Network" -f prod
+    ipam block create --cidr 172.16.0.0/16 --description "Test Network" -f test
+    ipam block create --cidr 192.168.0.0/16 --description "Development Network" -f dev  
    ```
 
-3. **Create an IP block**:
-   ```bash
-   ipam block create --cidr 10.0.0.0/16 --description "Main Datacenter"
-   ```
-
-4. **Create a subnet**:
+5. **Create a subnet**:
    ```bash
    ipam subnet create --block 10.0.0.0/16 --cidr 10.0.1.0/24 --name "app-tier" --region us-east1
    ```

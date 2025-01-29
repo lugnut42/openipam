@@ -1,0 +1,9 @@
+- validate all functions
+    - test-blocks
+    - test-subnets
+    - test-patterns
+- validate multiple block files
+- test gcp storage bucket
+- update pipeline
+- review test coverage
+- videos posted
