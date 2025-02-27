@@ -9,6 +9,17 @@ type Block struct {
 	CIDR        string   `yaml:"cidr"`
 	Description string   `yaml:"description"`
 	Subnets     []Subnet `yaml:"subnets"`
+	
+	// Stats are calculated at runtime, not stored in YAML
+	Stats *UtilizationStats `yaml:"-"`
+}
+
+// UtilizationStats represents runtime utilization statistics
+type UtilizationStats struct {
+	TotalIPs     uint64
+	AllocatedIPs uint64
+	AvailableIPs uint64
+	Utilization  float64
 }
 
 // Subnet represents a subnet within a block

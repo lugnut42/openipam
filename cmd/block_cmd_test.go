@@ -33,12 +33,15 @@ func TestBlockCommands(t *testing.T) {
 			ConfigFile: configFilePath,
 		}
 
+		// Set up environment variable for config path
+		os.Setenv("IPAM_CONFIG_PATH", tempDir)
+
 		rootCmd := &cobra.Command{Use: "ipam"}
-		rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
+		rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configFilePath, "Path to configuration file")
 		rootCmd.AddCommand(configCmd)
 
 		logger.Debug("About to execute config init command")
-		initArgs := []string{"config", "init", "--config", configFilePath, "--block-yaml-file", blockFilePath}
+		initArgs := []string{"config", "init", "default"}
 		logger.Debug("Config init args: %v", initArgs)
 		rootCmd.SetArgs(initArgs)
 
@@ -109,8 +112,8 @@ func TestBlockCommands(t *testing.T) {
 		return err
 	}
 
-	t.Run("block add", func(t *testing.T) {
-		logger.Debug("Starting 'block add' test")
+	t.Run("block create", func(t *testing.T) {
+		logger.Debug("Starting 'block create' test")
 
 		// Add additional validation
 		_, err := os.Stat(configFilePath)
@@ -121,15 +124,15 @@ func TestBlockCommands(t *testing.T) {
 
 		configContent, err := os.ReadFile(configFilePath)
 		assert.NoError(t, err)
-		logger.Debug("Config file contents before block add:\n%s", string(configContent))
+		logger.Debug("Config file contents before block create:\n%s", string(configContent))
 
-		err = executeCommand("block", "add", "--cidr", "10.0.0.0/16", "--description", "Test Block", "--file", "default")
+		err = executeCommand("block", "create", "--cidr", "10.0.0.0/16", "--description", "Test Block", "--file", "default")
 		assert.NoError(t, err)
 
 		// Verify block was added
 		blockContent, err := os.ReadFile(blockFilePath)
 		assert.NoError(t, err)
-		logger.Debug("Block file contents after add:\n%s", string(blockContent))
+		logger.Debug("Block file contents after create:\n%s", string(blockContent))
 	})
 
 	// Rest of the tests...

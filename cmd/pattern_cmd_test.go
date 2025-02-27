@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -53,9 +54,12 @@ func TestPatternCommands(t *testing.T) {
 		return rootCmd.Execute()
 	}
 
+	// Set up environment variable for config path
+	os.Setenv("IPAM_CONFIG_PATH", tempDir)
+	
 	// Initialize config first
 	logger.Debug("Initializing configuration")
-	err := executeCommand("config", "init", "--config", configPath, "--block-yaml-file", blockPath)
+	err := executeCommand("config", "init", "default", "--config", configPath)
 	assert.NoError(t, err)
 
 	// Verify config file exists and is valid
@@ -74,7 +78,7 @@ func TestPatternCommands(t *testing.T) {
 
 	// Create the block that the pattern will reference
 	logger.Debug("Creating prerequisite block")
-	err = executeCommand("block", "add", "--cidr", "10.0.0.0/8", "--description", "Test Block", "--file", "default")
+	err = executeCommand("block", "create", "--cidr", "10.0.0.0/8", "--description", "Test Block", "--file", "default")
 	if err != nil {
 		log.Printf("ERROR: Failed to add block: %v", err)
 		if cfg != nil {

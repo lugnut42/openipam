@@ -25,7 +25,10 @@ func TestConfigCommands(t *testing.T) {
 	}
 
 	t.Run("config init", func(t *testing.T) {
-		err := executeCommand("config", "init", "--config", configFilePath, "--block-yaml-file", blockFilePath)
+		// Set up environment variable for config path
+		os.Setenv("IPAM_CONFIG_PATH", tempDir)
+		
+		err := executeCommand("config", "init", "default", "--config", configFilePath)
 		assert.NoError(t, err)
 		_, err = os.Stat(configFilePath)
 		assert.NoError(t, err)

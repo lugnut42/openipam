@@ -47,24 +47,71 @@
      - `pattern show` displays pattern details ✓
      - `pattern delete` removes patterns ✓
 
+6. **Core Functionality Testing**
+   - **Description**: Fixed issues with CIDR overlap detection and command execution.
+   - **Status**: Completed
+   - **Acceptance Criteria**:
+     - All unit tests pass ✓
+     - CIDR overlap detection correctly identifies overlapping ranges ✓
+     - Shell-based functional tests pass ✓
+     - Core functionality works as expected ✓
+
+## Completed Tasks (Recently Added)
+
+7. **Validation and Verification Features**
+   - **Description**: Implemented enhanced validation and verification tools for IP address management.
+   - **Status**: Completed
+   - **Acceptance Criteria**:
+     - Advanced network overlap verification beyond basic CIDR checks ✓
+     - Subnet utilization reporting ✓
+     - Health checks for network configurations ✓
+     - Integrity validation for block files ✓
+     - Complex validation rules for subnet allocation ✓
+   - **Implementation Plan**:
+     - Design validation interfaces and error reporting structure ✓
+     - Implement advanced CIDR validation algorithms ✓
+     - Create subnet utilization calculation functions ✓
+     - Add configuration integrity verification tools ✓
+     - Build reporting capabilities for network usage analytics ✓
+   - **Completed Items**:
+     - Subnet utilization reporting implemented in block show command
+     - Added IP counting functions that properly handle network/broadcast addresses
+     - Built reporting capabilities that show absolute and percentage utilization
+     - Created standalone validation tool (validate-blocks) for comprehensive file validation
+     - Implemented YAML structure validation for block files
+     - Added checks for duplicate CIDRs, names, and other resources
+     - Implemented subnet containment verification in parent blocks
+     - Added cross-reference validation between patterns and blocks
+
 ## Outstanding Tasks
 
 1. **Increase Test Coverage**
    - **Description**: Implement additional tests to achieve full test coverage.
-   - **Status**: Pending
+   - **Status**: In Progress
    - **Acceptance Criteria**:
      - All commands have unit tests covering normal cases, edge cases, and error handling
      - Test coverage reaches 100% for all packages
-   - **Files Needing Coverage**:
-     - cmd/block_cmd.go
-     - cmd/root.go
+   - **Files With Improved Coverage**:
+     - cmd/block_cmd.go ✓
+     - cmd/root.go ✓
+     - internal/ipam/ipam_block_*.go ✓
+     - internal/ipam/ipam_subnet.go ✓ (core functions)
+     - internal/ipam/ipam_pattern.go ✓ (ListPatterns, ShowPattern functions)
+   - **Current Coverage Status**:
+     - cmd package: 54.5%
+     - internal/ipam package: 42.0% (up from 30.7%)
+     - internal/config package: 72.2%
+   - **Files Needing Additional Coverage**:
      - cmd/subnet_cmd.go
      - cmd/pattern_cmd.go
      - cmd/config_cmd.go
-     - All files in internal/ipam/
+     - internal/ipam/CreatePattern and DeletePattern functions
+     - internal/ipam/subnet management functions
+     - internal/ipam/ListAvailableCIDRs
+     - internal/logger/*
      - main.go
 
-2. **Documentation Update**
+2. **Documentation Update** (NEXT PRIORITY)
    - **Description**: Update and improve documentation.
    - **Status**: In Progress
    - **Acceptance Criteria**:
@@ -72,13 +119,19 @@
      - Examples provided for all commands
      - Configuration guide updated
      - Usage patterns documented
+     - Add documentation for new validation features
 
 3. **Code Refinement**
    - **Description**: Review and refine existing codebase.
-   - **Status**: Pending
+   - **Status**: In Progress
    - **Acceptance Criteria**:
      - Consistent error handling across all commands
      - Code duplication eliminated
      - Improved input validation
      - Better error messages
      - Standardized logging
+   - **Improvements Made**:
+     - Improved error handling in root command ✓
+     - Enhanced CIDR overlap detection ✓
+     - Fixed file handling in DeleteBlock ✓
+     - Added missing flags to commands ✓

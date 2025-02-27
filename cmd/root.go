@@ -57,25 +57,17 @@ You can then use the following commands to manage IP blocks and subnets:
 			return nil
 		}
 
-		// // Check for --config flag
-		// if cfgFile == "" {
-		// 	// Check for environment variable
-		// 	envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
-		// 	logger.Debug("Environment IPAM_CONFIG_PATH: %s", envConfigPath)
-		// 	if envConfigPath == "" {
-		// 		return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
-		// 	}
-		// 	cfgFile = envConfigPath
-		// }
-
-		// Get configuration directory
-		configDir := os.Getenv("IPAM_CONFIG_PATH")
-		if configDir == "" {
-			return fmt.Errorf("IPAM_CONFIG_PATH environment variable is required")
+		// Check for --config flag
+		if cfgFile == "" {
+			// Check for environment variable
+			envConfigPath := os.Getenv("IPAM_CONFIG_PATH")
+			logger.Debug("Environment IPAM_CONFIG_PATH: %s", envConfigPath)
+			if envConfigPath == "" {
+				return fmt.Errorf("no configuration file specified. Please set the IPAM_CONFIG_PATH environment variable or use the --config flag")
+			}
+			// Construct config file path from environment variable
+			cfgFile = filepath.Join(envConfigPath, "ipam-config.yaml")
 		}
-
-		// Construct config file path
-		cfgFile = filepath.Join(configDir, "ipam-config.yaml")
 
 		logger.Debug("Using config file: %s", cfgFile)
 
@@ -103,12 +95,14 @@ You can then use the following commands to manage IP blocks and subnets:
 	},
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+func Execute() error {
+	err := rootCmd.Execute()
+	if err != nil {
 		log.Printf("ERROR: Command execution failed: %v", err)
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }
 
 func init() {
@@ -116,5 +110,37 @@ func init() {
 	cfg = &config.Config{}
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
 	rootCmd.PersistentFlags().BoolVar(&debugMode, "debug", false, "Enable debug logging")
+	
+		// Add a direct command to check block file integrity
+	validateFilesCmd := &cobra.Command{
+		Use:   "check-files [file-key]",
+		Short: "Check configuration files for integrity",
+		Long:  `Check block files and configuration for integrity and consistency.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) > 0 {
+				fileKey := args[0]
+				results, err := ipam.ValidateBlockFile(cfg, fileKey)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, "Error:", err)
+					os.Exit(1)
+				}
+				
+				fmt.Printf("=== Block File: %s ===\n", fileKey)
+				ipam.PrintValidationResults(results)
+				
+				if results.ErrorCount > 0 {
+					os.Exit(1)
+				}
+			} else {
+				err := ipam.ValidateAllBlockFiles(cfg)
+				if err != nil {
+					os.Exit(1)
+				}
+			}
+		},
+	}
+	
+	validateFilesCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+	rootCmd.AddCommand(validateFilesCmd)
 	logger.Debug("Root command initialized with empty config: %+v", cfg)
 }

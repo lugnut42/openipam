@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -56,9 +57,12 @@ func TestSubnetCommands(t *testing.T) {
 		return rootCmd.Execute()
 	}
 
+	// Set up environment variable for config path
+	os.Setenv("IPAM_CONFIG_PATH", tempDir)
+	
 	// Initialize config first
 	logger.Debug("Initializing configuration")
-	err := executeCommand("config", "init", "--config", configPath, "--block-yaml-file", blockPath)
+	err := executeCommand("config", "init", "default", "--config", configPath)
 	assert.NoError(t, err)
 
 	// Set the config file for subsequent commands
@@ -66,7 +70,7 @@ func TestSubnetCommands(t *testing.T) {
 
 	// Create the block first that we'll create subnets in
 	logger.Debug("Creating prerequisite block")
-	err = executeCommand("block", "add", "--cidr", "10.0.0.0/16", "--description", "Test Block", "--file", "default")
+	err = executeCommand("block", "create", "--cidr", "10.0.0.0/16", "--description", "Test Block", "--file", "default")
 	if err != nil {
 		log.Printf("ERROR: Failed to add block: %v", err)
 		if cfg != nil {
