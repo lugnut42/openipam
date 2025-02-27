@@ -11,12 +11,12 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.4'
+          go-version: '1.22.0'
       
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -27,12 +27,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.4'
+          go-version: '1.22.0'
           
       - name: Tidy Go modules
         run: go mod tidy
@@ -52,12 +52,12 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.4'
+          go-version: '1.22.0'
           
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
@@ -66,63 +66,60 @@ jobs:
           
       - name: Run nancy for dependency scanning
         run: |
-          go list -json -m all | docker run --rm -i sonatypecommunity/nancy:latest sleuth
+          go install github.com/sonatype-nexus-community/nancy@latest
+          go list -json -m all | nancy sleuth
 
   build:
-    needs: [lint, test] # remark security
+    needs: [lint, test, security]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.4'
+          go-version: '1.22.0'
           
-      - name: Build binary
+      - name: Build binaries
         run: |
           go mod download
           go build -v -o ipam
+          go build -v -o validate-blocks scripts/validate_blocks.go
           
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ipam
-          path: ipam
+          name: binaries
+          path: |
+            ipam
+            validate-blocks
 
   release:
     needs: [build]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.4'
+          go-version: '1.22.0'
 
-      - name: Build binary
+      - name: Build binaries
         run: |
           go mod download
           go build -v -o ipam
+          go build -v -o validate-blocks scripts/validate_blocks.go
 
       - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ipam
-          asset_name: ipam
-          asset_content_type: application/octet-stream
+          generate_release_notes: true
+          files: |
+            ipam
+            validate-blocks
