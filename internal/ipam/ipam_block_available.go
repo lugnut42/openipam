@@ -113,6 +113,14 @@ func calculateCIDRsInRange(start, end net.IP, maxPrefix int) []string {
 // maxCIDRSize calculates the maximum CIDR size that can be allocated starting at the given IP
 func maxCIDRSize(start, end net.IP, maxPrefix int) int {
 	size := 32
+	
+	// First check if IP is aligned - if not, we can only use /32
+	mask := net.CIDRMask(31, 32)
+	if !isIPAligned(start, mask) {
+		return 32
+	}
+	
+	// Now check for increasing sizes
 	for size > maxPrefix {
 		maskLen := 32 - size
 		ones := math.Pow(2, float64(maskLen))

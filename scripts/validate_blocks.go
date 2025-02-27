@@ -18,7 +18,7 @@ func main() {
 	}
 
 	configPath := filepath.Join(homeDir, ".openipam", "ipam-config.yaml")
-	
+
 	// Override with IPAM_CONFIG_PATH environment variable if set
 	if envPath := os.Getenv("IPAM_CONFIG_PATH"); envPath != "" {
 		configPath = filepath.Join(envPath, "ipam-config.yaml")
@@ -63,7 +63,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		ipam.PrintValidationResults(results)
+		if err := ipam.PrintValidationResults(results); err != nil {
+			fmt.Fprintf(os.Stderr, "Error printing validation results: %v\n", err)
+			os.Exit(1)
+		}
 		if results.ErrorCount > 0 {
 			os.Exit(1)
 		}

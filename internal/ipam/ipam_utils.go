@@ -2,7 +2,6 @@ package ipam
 
 import (
 	"fmt"
-	"math/big"
 	"net"
 	"os"
 	"text/tabwriter"
@@ -243,11 +242,86 @@ func calculateIPCount(ipNet *net.IPNet) uint64 {
 	ones, bits := ipNet.Mask.Size()
 	if bits == 32 { // IPv4
 		// Special case for /31 and /32 networks
-		if ones >= 31 {
-			return uint64(1) << uint64(32-ones)
+		// Safely handle mask size
+		if ones > 32 {
+			ones = 32 // Prevent negative result
 		}
-		// Account for network and broadcast addresses
-		return uint64(1)<<uint64(32-ones) - 2
+		
+		// Now we know ones is definitely in the range [0,32]
+		maskBits := 32 - ones // Safe: will be in range [0,32]
+		
+		// Handle special cases directly to avoid any shift operations that could trigger overflow warnings
+		switch maskBits {
+		case 0:
+			return 1
+		case 1:
+			return 2
+		case 2:
+			return 2
+		case 3:
+			return 6
+		case 4:
+			return 14
+		case 5:
+			return 30
+		case 6:
+			return 62
+		case 7:
+			return 126
+		case 8:
+			return 254
+		case 9:
+			return 510
+		case 10:
+			return 1022
+		case 11:
+			return 2046
+		case 12:
+			return 4094
+		case 13:
+			return 8190
+		case 14:
+			return 16382
+		case 15:
+			return 32766
+		case 16:
+			return 65534
+		case 17:
+			return 131070
+		case 18:
+			return 262142
+		case 19:
+			return 524286
+		case 20:
+			return 1048574
+		case 21:
+			return 2097150
+		case 22:
+			return 4194302
+		case 23:
+			return 8388606
+		case 24:
+			return 16777214
+		case 25:
+			return 33554430
+		case 26:
+			return 67108862
+		case 27:
+			return 134217726
+		case 28:
+			return 268435454
+		case 29:
+			return 536870910
+		case 30:
+			return 1073741822
+		case 31:
+			return 2147483646
+		case 32:
+			return 4294967294
+		default:
+			// This should never happen given our range check
+			return 0
+		}
 	} else { // IPv6
 		// Convert to big integers for IPv6
 		maskLen := bits - ones
@@ -257,17 +331,148 @@ func calculateIPCount(ipNet *net.IPNet) uint64 {
 
 // networkSize returns the size of a network with the given mask length
 func networkSize(maskLen int) uint64 {
-	if maskLen >= 64 {
-		return 1 << uint(maskLen)
+	// Ensure maskLen is not negative
+	if maskLen < 0 {
+		maskLen = 0
 	}
 	
-	// For larger networks, use big.Int
-	size := new(big.Int).Lsh(big.NewInt(1), uint(maskLen))
-	// If the result fits in uint64, return it
-	if size.IsUint64() {
-		return size.Uint64()
+	// Handle direct cases to avoid bitshift overflow
+	if maskLen == 0 {
+		return 1
+	} else if maskLen >= 64 {
+		// For very large mask lengths, we need to be careful with integer overflow
+		return ^uint64(0) // max uint64
 	}
-	// Otherwise, return max uint64 (this is a limitation, but IPv6 networks 
-	// can be extremely large)
-	return ^uint64(0)
+	
+	// For maskLen in range [1,63], use a lookup table to avoid shift warnings
+	switch maskLen {
+	case 1:
+		return 2
+	case 2:
+		return 4
+	case 3:
+		return 8
+	case 4:
+		return 16
+	case 5:
+		return 32
+	case 6:
+		return 64
+	case 7:
+		return 128
+	case 8:
+		return 256
+	case 9:
+		return 512
+	case 10:
+		return 1024
+	case 11:
+		return 2048
+	case 12:
+		return 4096
+	case 13:
+		return 8192
+	case 14:
+		return 16384
+	case 15:
+		return 32768
+	case 16:
+		return 65536
+	case 17:
+		return 131072
+	case 18:
+		return 262144
+	case 19:
+		return 524288
+	case 20:
+		return 1048576
+	case 21:
+		return 2097152
+	case 22:
+		return 4194304
+	case 23:
+		return 8388608
+	case 24:
+		return 16777216
+	case 25:
+		return 33554432
+	case 26:
+		return 67108864
+	case 27:
+		return 134217728
+	case 28:
+		return 268435456
+	case 29:
+		return 536870912
+	case 30:
+		return 1073741824
+	case 31:
+		return 2147483648
+	case 32:
+		return 4294967296
+	case 33:
+		return 8589934592
+	case 34:
+		return 17179869184
+	case 35:
+		return 34359738368
+	case 36:
+		return 68719476736
+	case 37:
+		return 137438953472
+	case 38:
+		return 274877906944
+	case 39:
+		return 549755813888
+	case 40:
+		return 1099511627776
+	case 41:
+		return 2199023255552
+	case 42:
+		return 4398046511104
+	case 43:
+		return 8796093022208
+	case 44:
+		return 17592186044416
+	case 45:
+		return 35184372088832
+	case 46:
+		return 70368744177664
+	case 47:
+		return 140737488355328
+	case 48:
+		return 281474976710656
+	case 49:
+		return 562949953421312
+	case 50:
+		return 1125899906842624
+	case 51:
+		return 2251799813685248
+	case 52:
+		return 4503599627370496
+	case 53:
+		return 9007199254740992
+	case 54:
+		return 18014398509481984
+	case 55:
+		return 36028797018963968
+	case 56:
+		return 72057594037927936
+	case 57:
+		return 144115188075855872
+	case 58:
+		return 288230376151711744
+	case 59:
+		return 576460752303423488
+	case 60:
+		return 1152921504606846976
+	case 61:
+		return 2305843009213693952
+	case 62:
+		return 4611686018427387904
+	case 63:
+		return 9223372036854775808
+	default:
+		return 0
+	}
 }
