@@ -10,10 +10,7 @@ import (
 	"github.com/lugnut42/openipam/internal/config"
 )
 
-// debugIP is a helper function for debugging IP addresses
-func debugIP(prefix string, ip net.IP) string {
-	return fmt.Sprintf("%s: %s", prefix, ip.String())
-}
+// Intentionally removed debugIP function as it was unused
 
 // compareIP compares two IP addresses lexicographically
 func compareIP(a, b net.IP) int {
@@ -28,15 +25,7 @@ func compareIP(a, b net.IP) int {
 	return 0
 }
 
-// ipInRange checks if an IP is within the range defined by start and end IPs
-func ipInRange(ip, start, end net.IP) bool {
-	return compareIP(ip, start) >= 0 && compareIP(ip, end) <= 0
-}
-
-// ipInCIDR checks if an IP is within a CIDR range
-func ipInCIDR(ip net.IP, ipnet *net.IPNet) bool {
-	return ipnet.Contains(ip)
-}
+// Intentionally removed unused IP range functions
 
 // Using lastIP from ipam_block.go
 
@@ -51,8 +40,8 @@ func checkCIDROverlap(cidr1, cidr2 *net.IPNet) bool {
 	broadcast2 := lastIP(cidr2)
 
 	// Simple containment check: if either range contains endpoints of the other
-	if cidr1.Contains(net2) || cidr1.Contains(broadcast2) || 
-	   cidr2.Contains(net1) || cidr2.Contains(broadcast1) {
+	if cidr1.Contains(net2) || cidr1.Contains(broadcast2) ||
+		cidr2.Contains(net1) || cidr2.Contains(broadcast1) {
 		return true
 	}
 
@@ -62,10 +51,10 @@ func checkCIDROverlap(cidr1, cidr2 *net.IPNet) bool {
 		// Convert IPs to integers for easier range comparison
 		net1Int := (uint32(net1[0]) << 24) | (uint32(net1[1]) << 16) | (uint32(net1[2]) << 8) | uint32(net1[3])
 		net2Int := (uint32(net2[0]) << 24) | (uint32(net2[1]) << 16) | (uint32(net2[2]) << 8) | uint32(net2[3])
-		
+
 		broadcast1Int := (uint32(broadcast1[0]) << 24) | (uint32(broadcast1[1]) << 16) | (uint32(broadcast1[2]) << 8) | uint32(broadcast1[3])
 		broadcast2Int := (uint32(broadcast2[0]) << 24) | (uint32(broadcast2[1]) << 16) | (uint32(broadcast2[2]) << 8) | uint32(broadcast2[3])
-		
+
 		// Check for range overlap using integer comparison
 		return (net1Int <= broadcast2Int && broadcast1Int >= net2Int)
 	}
@@ -160,7 +149,7 @@ func PrintBlockUtilization(cfg *config.Config, blockCIDR, fileKey string) error 
 	fmt.Fprintf(w, "Allocated IPs:\t%d\n", report.AllocatedIPs)
 	fmt.Fprintf(w, "Available IPs:\t%d\n", report.AvailableIPs)
 	fmt.Fprintf(w, "Utilization:\t%.2f%%\n", report.UtilizationRatio*100)
-	
+
 	// List all subnets with their contribution to utilization
 	blockFile, ok := cfg.BlockFiles[fileKey]
 	if ok {
@@ -173,7 +162,7 @@ func PrintBlockUtilization(cfg *config.Config, blockCIDR, fileKey string) error 
 						fmt.Fprintln(w, "\nSubnets:")
 						fmt.Fprintln(w, "CIDR\tName\tRegion\tIP Count\t% of Block")
 						fmt.Fprintln(w, "----\t----\t------\t--------\t---------")
-						
+
 						// Calculate and print each subnet's contribution
 						for _, subnet := range block.Subnets {
 							_, subnetNet, err := net.ParseCIDR(subnet.CIDR)
@@ -183,10 +172,10 @@ func PrintBlockUtilization(cfg *config.Config, blockCIDR, fileKey string) error 
 								if report.TotalIPs > 0 {
 									percentage = float64(subnetSize) / float64(report.TotalIPs) * 100
 								}
-								fmt.Fprintf(w, "%s\t%s\t%s\t%d\t%.2f%%\n", 
-									subnet.CIDR, 
-									subnet.Name, 
-									subnet.Region, 
+								fmt.Fprintf(w, "%s\t%s\t%s\t%d\t%.2f%%\n",
+									subnet.CIDR,
+									subnet.Name,
+									subnet.Region,
 									subnetSize,
 									percentage)
 							}
@@ -196,7 +185,7 @@ func PrintBlockUtilization(cfg *config.Config, blockCIDR, fileKey string) error 
 			}
 		}
 	}
-	
+
 	w.Flush()
 	return nil
 }
@@ -232,11 +221,11 @@ func PrintAllBlocksUtilization(cfg *config.Config, fileKey string) error {
 		if err != nil {
 			continue // Skip blocks with errors
 		}
-		fmt.Fprintf(w, "%s\t%d\t%d\t%d\t%.2f%%\n", 
-			report.CIDR, 
-			report.TotalIPs, 
-			report.AllocatedIPs, 
-			report.AvailableIPs, 
+		fmt.Fprintf(w, "%s\t%d\t%d\t%d\t%.2f%%\n",
+			report.CIDR,
+			report.TotalIPs,
+			report.AllocatedIPs,
+			report.AvailableIPs,
 			report.UtilizationRatio*100)
 	}
 	w.Flush()
@@ -251,10 +240,10 @@ func calculateIPCount(ipNet *net.IPNet) uint64 {
 	if bits == 32 { // IPv4
 		// Special case for /31 and /32 networks
 		if ones >= 31 {
-			return uint64(1) << uint(32-ones)
+			return uint64(1) << uint64(32-ones)
 		}
 		// Account for network and broadcast addresses
-		return uint64(1)<<uint(32-ones) - 2
+		return uint64(1)<<uint64(32-ones) - 2
 	} else { // IPv6
 		// Convert to big integers for IPv6
 		maskLen := bits - ones
@@ -267,14 +256,14 @@ func networkSize(maskLen int) uint64 {
 	if maskLen >= 64 {
 		return 1 << uint(maskLen)
 	}
-	
+
 	// For larger networks, use big.Int
 	size := new(big.Int).Lsh(big.NewInt(1), uint(maskLen))
 	// If the result fits in uint64, return it
 	if size.IsUint64() {
 		return size.Uint64()
 	}
-	// Otherwise, return max uint64 (this is a limitation, but IPv6 networks 
+	// Otherwise, return max uint64 (this is a limitation, but IPv6 networks
 	// can be extremely large)
 	return ^uint64(0)
 }

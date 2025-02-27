@@ -72,14 +72,14 @@ func calculateAvailableCIDRs(block *Block) []string {
 	// For each subnet, find the gap before it
 	for _, subnet := range subnets {
 		_, subnetNet, _ := net.ParseCIDR(subnet.CIDR)
-		
+
 		// If there's space before the current subnet
 		if bytes.Compare(currentIP, subnetNet.IP) < 0 {
 			// Add available CIDRs in the gap
 			gapCIDRs := calculateCIDRsInRange(currentIP, subnetNet.IP, blockSize)
 			availableCIDRs = append(availableCIDRs, gapCIDRs...)
 		}
-		
+
 		// Move current pointer to after this subnet
 		currentIP = nextIP(lastIP(subnetNet), subnetNet.Mask)
 	}
@@ -100,7 +100,7 @@ func calculateCIDRsInRange(start, end net.IP, maxPrefix int) []string {
 		maxSize := maxCIDRSize(start, end, maxPrefix)
 		cidr := fmt.Sprintf("%s/%d", start.String(), maxSize)
 		cidrs = append(cidrs, cidr)
-		
+
 		// Move to the next IP block
 		ones := math.Pow(2, float64(32-maxSize))
 		start = nextIPWithStep(start, int(ones))
@@ -115,18 +115,18 @@ func maxCIDRSize(start, end net.IP, maxPrefix int) int {
 		maskLen := 32 - size
 		ones := math.Pow(2, float64(maskLen))
 		mask := net.CIDRMask(size, 32)
-		
+
 		// Check if the IP is aligned for this mask size
 		if !isIPAligned(start, mask) {
 			break
 		}
-		
+
 		// Check if this size fits within our range
 		endIP := nextIPWithStep(start, int(ones)-1)
 		if bytes.Compare(endIP, end) >= 0 {
 			break
 		}
-		
+
 		size--
 	}
 	return size
@@ -137,14 +137,14 @@ func isIPAligned(ip net.IP, mask net.IPMask) bool {
 	masked := make(net.IP, len(ip))
 	copy(masked, ip)
 	masked = masked.Mask(mask)
-	return bytes.Equal(masked, ip)
+	return ip.Equal(masked)
 }
 
 // nextIPWithStep returns the next IP address with a given step size
 func nextIPWithStep(ip net.IP, step int) net.IP {
 	newIP := make(net.IP, len(ip))
 	copy(newIP, ip)
-	
+
 	for i := len(newIP) - 1; i >= 0; i-- {
 		sum := int(newIP[i]) + (step % 256)
 		newIP[i] = byte(sum % 256)

@@ -22,10 +22,10 @@ type ValidationResult struct {
 
 // ValidationResults holds all validation results for a file
 type ValidationResults struct {
-	Filename    string
-	ErrorCount  int
+	Filename     string
+	ErrorCount   int
 	WarningCount int
-	Results     []ValidationResult
+	Results      []ValidationResult
 }
 
 // ValidateBlockFile performs comprehensive validation on a block file
@@ -417,16 +417,18 @@ func PrintValidationResults(results *ValidationResults) error {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	fmt.Fprintf(w, "Validation Results for: %s\n", results.Filename)
 	fmt.Fprintf(w, "Errors: %d  Warnings: %d\n\n", results.ErrorCount, results.WarningCount)
-	
+
 	if len(results.Results) == 0 {
 		fmt.Fprintln(w, "No issues found. Configuration is valid.")
-		w.Flush()
+		if err := w.Flush(); err != nil {
+			return err
+		}
 		return nil
 	}
 
 	fmt.Fprintln(w, "Type\tCategory\tLocation\tDescription")
 	fmt.Fprintln(w, "----\t--------\t--------\t-----------")
-	
+
 	for _, result := range results.Results {
 		var typeStr string
 		if result.Type == "error" {
@@ -434,15 +436,17 @@ func PrintValidationResults(results *ValidationResults) error {
 		} else {
 			typeStr = "WARNING"
 		}
-		
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", 
-			typeStr, 
-			result.Category, 
-			result.Location, 
+
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+			typeStr,
+			result.Category,
+			result.Location,
 			result.Description)
 	}
-	w.Flush()
-	
+	if err := w.Flush(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -465,18 +469,20 @@ func ValidateAllBlockFiles(cfg *config.Config) error {
 		}
 
 		fmt.Printf("\n=== Block File: %s ===\n", fileKey)
-		PrintValidationResults(results)
-		
+		if err := PrintValidationResults(results); err != nil {
+			return fmt.Errorf("error printing validation results: %w", err)
+		}
+
 		totalErrors += results.ErrorCount
 		totalWarnings += results.WarningCount
 	}
 
 	fmt.Printf("\nValidation Summary\n")
 	fmt.Printf("Total Errors: %d  Total Warnings: %d\n", totalErrors, totalWarnings)
-	
+
 	if totalErrors > 0 {
 		return fmt.Errorf("validation found %d errors across all block files", totalErrors)
 	}
-	
+
 	return nil
 }

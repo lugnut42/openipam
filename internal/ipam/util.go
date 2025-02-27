@@ -75,7 +75,7 @@ func marshalBlocks(blocks []Block) ([]byte, error) {
 }
 
 func writeYAMLFile(filePath string, yamlData []byte) error {
-	err := os.WriteFile(filePath, yamlData, 0644)
+	err := os.WriteFile(filePath, yamlData, 0600)
 	if err != nil {
 		return fmt.Errorf("error writing YAML file: %w", err)
 	}

@@ -29,7 +29,7 @@ This performs a comprehensive validation on block files, checking:
 If a specific file-key is provided, only checks that file. Otherwise, checks all configured files.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		all, _ := cmd.Flags().GetBool("all")
-		
+
 		if all {
 			fmt.Println("Checking all block files...")
 			err := ipam.ValidateAllBlockFiles(cfg)
@@ -45,7 +45,10 @@ If a specific file-key is provided, only checks that file. Otherwise, checks all
 				fmt.Fprintln(os.Stderr, "Error:", err)
 				os.Exit(1)
 			}
-			ipam.PrintValidationResults(results)
+			if err := ipam.PrintValidationResults(results); err != nil {
+				fmt.Fprintln(os.Stderr, "Error printing validation results:", err)
+				os.Exit(1)
+			}
 			if results.ErrorCount > 0 {
 				os.Exit(1)
 			}
@@ -57,7 +60,10 @@ If a specific file-key is provided, only checks that file. Otherwise, checks all
 				fmt.Fprintln(os.Stderr, "Error:", err)
 				os.Exit(1)
 			}
-			ipam.PrintValidationResults(results)
+			if err := ipam.PrintValidationResults(results); err != nil {
+				fmt.Fprintln(os.Stderr, "Error printing validation results:", err)
+				os.Exit(1)
+			}
 			if results.ErrorCount > 0 {
 				os.Exit(1)
 			}
@@ -68,6 +74,6 @@ If a specific file-key is provided, only checks that file. Otherwise, checks all
 func init() {
 	rootCmd.AddCommand(checkCmd)
 	checkCmd.AddCommand(checkBlocksCmd)
-	
+
 	checkBlocksCmd.Flags().BoolP("all", "a", false, "Check all block files")
 }

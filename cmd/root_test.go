@@ -14,13 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func captureOutput(f func()) string {
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	f()
-	log.SetOutput(os.Stderr) // restore default output
-	return buf.String()
-}
+// Removed unused captureOutput function
 
 func setupTestConfig(t *testing.T) (string, func()) {
 	tmpDir := t.TempDir()
@@ -123,31 +117,31 @@ func TestExecute(t *testing.T) {
 
 			// Capture stderr output
 			origStderr := os.Stderr
-			os.Stderr, _ = os.Create(os.DevNull)  // Redirect stderr to null during command
+			os.Stderr, _ = os.Create(os.DevNull) // Redirect stderr to null during command
 			errReader, errWriter, _ := os.Pipe()
 			os.Stderr = errWriter
-			
+
 			// Also capture log output
 			var logBuf bytes.Buffer
 			log.SetOutput(&logBuf)
 
 			// Execute the command
 			err := rootCmd.Execute()
-			
+
 			// Finish capturing stderr
 			errWriter.Close()
 			errOutput, _ := io.ReadAll(errReader)
 			os.Stderr = origStderr
-			
+
 			// Also get the error message if any
 			errMsg := ""
 			if err != nil {
 				errMsg = err.Error()
 			}
-			
+
 			// Restore log output
 			log.SetOutput(os.Stderr)
-			
+
 			// For debugging
 			// t.Logf("Error msg: %s", errMsg)
 			// t.Logf("Log output: %s", logBuf.String())
@@ -157,12 +151,12 @@ func TestExecute(t *testing.T) {
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errContains != "" {
-					// Try all outputs to find the error message 
+					// Try all outputs to find the error message
 					errorFound := strings.Contains(errMsg, tt.errContains) ||
 						strings.Contains(logBuf.String(), tt.errContains) ||
 						strings.Contains(string(errOutput), tt.errContains)
-					
-					assert.True(t, errorFound, 
+
+					assert.True(t, errorFound,
 						"Expected error containing '%s', got error='%s', log='%s', stderr='%s'",
 						tt.errContains, errMsg, logBuf.String(), string(errOutput))
 				}
@@ -191,17 +185,17 @@ func TestPersistentPreRunE(t *testing.T) {
 	cfgFile := filepath.Join(tempDir, "ipam-config.yaml")
 	err := os.WriteFile(cfgFile, []byte("dataDir: "+tempDir), 0644)
 	require.NoError(t, err)
-	
+
 	// Make sure debug is reset for each test
 	debugMode = false
 
 	tests := []struct {
-		name        string
-		cmd         *cobra.Command
-		args        []string
-		envVars     map[string]string
-		wantErr     bool
-		wantDebug   bool
+		name      string
+		cmd       *cobra.Command
+		args      []string
+		envVars   map[string]string
+		wantErr   bool
+		wantDebug bool
 	}{
 		{
 			name: "config init command skips check",

@@ -5,36 +5,23 @@ import (
 	"os"
 
 	"github.com/lugnut42/openipam/internal/ipam"
-
 	"github.com/spf13/cobra"
 )
 
-// blockCmd represents the block command
 var blockCmd = &cobra.Command{
 	Use:   "block",
-	Short: "Manage IP blocks",
-	Long:  `Create, list, show, and delete IP blocks.`,
+	Short: "Manage IP address blocks",
+	Long:  `Add, list, show, and delete IP address blocks.`,
 }
 
-var blockListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List IP blocks",
-	Long:  `List all available IP blocks.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fileKey, _ := cmd.Flags().GetString("file")
-		err := ipam.ListBlocks(cfg, fileKey)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err)
-			os.Exit(1)
-		}
-	},
-}
-
+// blockCreateCmd represents the create command
 var blockCreateCmd = &cobra.Command{
-	//var blockCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create a new IP block",
-	Long:  `Create a new IP block to the YAML file.`,
+	Short: "Create a new IP address block",
+	Long: `Create a new IP address block with a specified CIDR range.
+	
+Example:
+  ipam block create --cidr 10.0.0.0/16 --description "Production Network" --file prod`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cidr, _ := cmd.Flags().GetString("cidr")
 		description, _ := cmd.Flags().GetString("description")
@@ -46,15 +33,40 @@ var blockCreateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Block added successfully!")
+		fmt.Printf("Created block %s in %s file\n", cidr, fileKey)
 	},
 }
 
+// blockListCmd represents the list command
+var blockListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all IP address blocks",
+	Long: `List all IP address blocks in the block file.
+	
+Example:
+  ipam block list
+  ipam block list --file prod`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fileKey, _ := cmd.Flags().GetString("file")
+
+		err := ipam.ListBlocks(cfg, fileKey)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+			os.Exit(1)
+		}
+	},
+}
+
+// blockShowCmd represents the show command
 var blockShowCmd = &cobra.Command{
 	Use:   "show",
-	Short: "Show details of an IP block",
-	Long:  `Display details of a specific IP block.`,
-	Args:  cobra.ExactArgs(1),
+	Short: "Show details of an IP address block",
+	Long: `Show details of an IP address block, including its CIDR, description, and subnets.
+	
+Example:
+  ipam block show 10.0.0.0/16
+  ipam block show 10.0.0.0/16 --file prod`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		cidr := args[0]
 		fileKey, _ := cmd.Flags().GetString("file")
@@ -67,32 +79,42 @@ var blockShowCmd = &cobra.Command{
 	},
 }
 
+// blockDeleteCmd represents the delete command
 var blockDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Delete an IP block",
-	Long:  `Delete a specific IP block from the YAML file.`,
-	Args:  cobra.ExactArgs(1),
+	Short: "Delete an IP address block",
+	Long: `Delete an IP address block.
+	
+Example:
+  ipam block delete 10.0.0.0/16
+  ipam block delete 10.0.0.0/16 --force
+  ipam block delete 10.0.0.0/16 --file prod`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		cidr := args[0]
 		force, _ := cmd.Flags().GetBool("force")
 		fileKey, _ := cmd.Flags().GetString("file")
 
-		// Pass fileKey to DeleteBlock 
 		err := ipam.DeleteBlock(cfg, cidr, force, fileKey)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Block deleted successfully!")
+		fmt.Printf("Deleted block %s from %s file\n", cidr, fileKey)
 	},
 }
 
+// blockAvailableCmd represents the available command
 var blockAvailableCmd = &cobra.Command{
 	Use:   "available",
-	Short: "List available CIDR ranges within a block",
-	Long:  `List all available CIDR ranges within a specified block.`,
-	Args:  cobra.ExactArgs(1),
+	Short: "Show available subnets in a block",
+	Long: `Show the available subnets in a block that can be allocated.
+	
+Example:
+  ipam block available 10.0.0.0/16
+  ipam block available 10.0.0.0/16 --file prod`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		cidr := args[0]
 		fileKey, _ := cmd.Flags().GetString("file")
@@ -127,16 +149,19 @@ Without a file-key, it validates the default block file.`,
 		if len(args) > 0 {
 			fileKey = args[0]
 		}
-		
+
 		results, err := ipam.ValidateBlockFile(cfg, fileKey)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 			os.Exit(1)
 		}
-		
+
 		fmt.Printf("=== Validating Block File: %s ===\n", fileKey)
-		ipam.PrintValidationResults(results)
-		
+		if err := ipam.PrintValidationResults(results); err != nil {
+			fmt.Fprintln(os.Stderr, "Error printing validation results:", err)
+			os.Exit(1)
+		}
+
 		if results.ErrorCount > 0 {
 			os.Exit(1)
 		}
@@ -145,71 +170,69 @@ Without a file-key, it validates the default block file.`,
 
 // blockUtilCommand represents the utilization command
 var blockUtilCommand = &cobra.Command{
-	Use:   "utilization [CIDR]",
-	Short: "Show IP utilization statistics for a block",
-	Long:  `Display IP address utilization statistics for a specific block or all blocks.
-	
-When used with a CIDR argument, shows detailed utilization for that specific block.
-When used with the --all flag, shows utilization summary for all blocks in the file.`,
+	Use:   "util [block-cidr]",
+	Short: "Show IP address utilization",
+	Long: `Show utilization statistics for a specific block or all blocks.
+
+This command calculates IP address utilization statistics, showing:
+- Total IP addresses in the block
+- Allocated IP addresses (used by subnets)
+- Available IP addresses
+- Utilization percentage
+- Subnet breakdown with allocation percentages
+
+To show utilization for a specific block, provide its CIDR.
+To show utilization for all blocks, omit the CIDR parameter.
+
+Example:
+  ipam block util 10.0.0.0/16   # Show utilization for a specific block
+  ipam block util                # Show utilization for all blocks
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fileKey, _ := cmd.Flags().GetString("file")
-		all, _ := cmd.Flags().GetBool("all")
 
-		var err error
-		if all {
-			err = ipam.PrintAllBlocksUtilization(cfg, fileKey)
-		} else if len(args) == 1 {
+		if len(args) > 0 {
+			// Show utilization for a specific block
 			cidr := args[0]
-			err = ipam.PrintBlockUtilization(cfg, cidr, fileKey)
+			err := ipam.PrintBlockUtilization(cfg, cidr, fileKey)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
 		} else {
-			fmt.Fprintln(os.Stderr, "Error: Either specify a CIDR or use the --all flag")
-			os.Exit(1)
-		}
-
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err)
-			os.Exit(1)
+			// Show utilization for all blocks
+			err := ipam.PrintAllBlocksUtilization(cfg, fileKey)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
 		}
 	},
 }
 
-
 func init() {
 	rootCmd.AddCommand(blockCmd)
-	
-	// List command
-	blockCmd.AddCommand(blockListCmd)
-	blockListCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
-	
-	// Create command
-	blockCreateCmd.Flags().StringP("cidr", "c", "", "CIDR block (required)")
-	if err := blockCreateCmd.MarkFlagRequired("cidr"); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
-	blockCreateCmd.Flags().StringP("description", "d", "", "Description of the block")
-	blockCreateCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockCreateCmd)
-	
-	// Show command
-	blockShowCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
+	blockCmd.AddCommand(blockListCmd)
 	blockCmd.AddCommand(blockShowCmd)
-	
-	// Delete command
-	blockDeleteCmd.Flags().BoolP("force", "", false, "Force deletion without confirmation")
-	blockDeleteCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockDeleteCmd)
-	
-	// Available command
-	blockAvailableCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockAvailableCmd)
-	
-	// Validate command
-	blockValidateCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	blockCmd.AddCommand(blockValidateCmd)
-	
-	// Utilization command
-	blockUtilCommand.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
-	blockUtilCommand.Flags().BoolP("all", "a", false, "Show utilization for all blocks")
 	blockCmd.AddCommand(blockUtilCommand)
+
+	blockCreateCmd.Flags().String("cidr", "", "CIDR range of the block")
+	blockCreateCmd.Flags().String("description", "", "Description of the block")
+	blockCreateCmd.Flags().StringP("file", "f", "default", "Block file key to use")
+	blockCreateCmd.MarkFlagRequired("cidr")
+
+	blockListCmd.Flags().StringP("file", "f", "default", "Block file key to use")
+
+	blockShowCmd.Flags().StringP("file", "f", "default", "Block file key to use")
+
+	blockDeleteCmd.Flags().Bool("force", false, "Force deletion of the block if it contains subnets")
+	blockDeleteCmd.Flags().StringP("file", "f", "default", "Block file key to use")
+
+	blockAvailableCmd.Flags().StringP("file", "f", "default", "Block file key to use")
+
+	blockUtilCommand.Flags().StringP("file", "f", "default", "Block file key to use")
 }

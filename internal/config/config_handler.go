@@ -46,7 +46,7 @@ func WriteConfig(cfg *Config) error {
 		return fmt.Errorf("error marshalling config: %w", err)
 	}
 
-	err = os.WriteFile(cfg.ConfigFile, data, 0644)
+	err = os.WriteFile(cfg.ConfigFile, data, 0600)
 	if err != nil {
 		return fmt.Errorf("error writing config file: %w", err)
 	}

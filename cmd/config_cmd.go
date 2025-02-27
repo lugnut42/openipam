@@ -51,14 +51,14 @@ var configInitCmd = &cobra.Command{
 		logger.Debug("Config init called with config directory=%s, block name=%s", configDir, blockName)
 
 		// Create the configuration directory if it doesn't exist
-		err := os.MkdirAll(configDir, 0755)
+		err := os.MkdirAll(configDir, 0750)
 		if err != nil {
 			return fmt.Errorf("error creating configuration directory: %w", err)
 		}
 
 		// Create blocks subdirectory
 		blocksDir := filepath.Join(configDir, "blocks")
-		err = os.MkdirAll(blocksDir, 0755)
+		err = os.MkdirAll(blocksDir, 0750)
 		if err != nil {
 			return fmt.Errorf("error creating blocks directory: %w", err)
 		}
@@ -74,7 +74,7 @@ var configInitCmd = &cobra.Command{
 		// Create named block file in blocks directory
 		blockFile := filepath.Join(blocksDir, fmt.Sprintf("%s.yaml", blockName))
 		if _, err := os.Stat(blockFile); os.IsNotExist(err) {
-			err = os.WriteFile(blockFile, []byte("[]"), 0644)
+			err = os.WriteFile(blockFile, []byte("[]"), 0600)
 			if err != nil {
 				return fmt.Errorf("error creating block file: %w", err)
 			}
@@ -136,12 +136,12 @@ var configAddBlockCmd = &cobra.Command{
 
 		// Create the new block file
 		blockFile := filepath.Join(configDir, "blocks", fmt.Sprintf("%s.yaml", blockName))
-		if err := os.MkdirAll(filepath.Dir(blockFile), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(blockFile), 0750); err != nil {
 			return fmt.Errorf("error creating blocks directory: %w", err)
 		}
 
 		if _, err := os.Stat(blockFile); os.IsNotExist(err) {
-			err = os.WriteFile(blockFile, []byte("[]"), 0644)
+			err = os.WriteFile(blockFile, []byte("[]"), 0600)
 			if err != nil {
 				return fmt.Errorf("error creating block file: %w", err)
 			}

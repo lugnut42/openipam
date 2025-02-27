@@ -110,8 +110,8 @@ func init() {
 	cfg = &config.Config{}
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
 	rootCmd.PersistentFlags().BoolVar(&debugMode, "debug", false, "Enable debug logging")
-	
-		// Add a direct command to check block file integrity
+
+	// Add a direct command to check block file integrity
 	validateFilesCmd := &cobra.Command{
 		Use:   "check-files [file-key]",
 		Short: "Check configuration files for integrity",
@@ -124,10 +124,13 @@ func init() {
 					fmt.Fprintln(os.Stderr, "Error:", err)
 					os.Exit(1)
 				}
-				
+
 				fmt.Printf("=== Block File: %s ===\n", fileKey)
-				ipam.PrintValidationResults(results)
-				
+				if err := ipam.PrintValidationResults(results); err != nil {
+					fmt.Fprintf(os.Stderr, "Error printing validation results: %v\n", err)
+					os.Exit(1)
+				}
+
 				if results.ErrorCount > 0 {
 					os.Exit(1)
 				}
@@ -139,7 +142,7 @@ func init() {
 			}
 		},
 	}
-	
+
 	validateFilesCmd.Flags().StringP("file", "f", "default", "Key for the block file in the configuration (default is 'default')")
 	rootCmd.AddCommand(validateFilesCmd)
 	logger.Debug("Root command initialized with empty config: %+v", cfg)
