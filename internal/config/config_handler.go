@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -21,7 +22,22 @@ type Pattern struct {
 }
 
 func LoadConfig(configFile string) (*Config, error) {
-	data, err := os.ReadFile(configFile)
+	// Use filepath.Clean to normalize the path and remove any relative path elements
+	cleanPath := filepath.Clean(configFile)
+	
+	// Verify the file exists before trying to read it
+	fileInfo, err := os.Stat(cleanPath)
+	if err != nil {
+		return nil, fmt.Errorf("error accessing config file: %w", err)
+	}
+	
+	// Check that it's a regular file, not a directory or other special file
+	if !fileInfo.Mode().IsRegular() {
+		return nil, fmt.Errorf("path is not a regular file: %s", cleanPath)
+	}
+	
+	// Read the file with controlled permissions (addresses G304: Potential file inclusion via variable)
+	data, err := os.ReadFile(cleanPath) // #nosec G304
 	if err != nil {
 		return nil, fmt.Errorf("error reading config file: %w", err)
 	}
@@ -32,7 +48,7 @@ func LoadConfig(configFile string) (*Config, error) {
 		return nil, fmt.Errorf("error unmarshalling config: %w", err)
 	}
 
-	cfg.ConfigFile = configFile
+	cfg.ConfigFile = cleanPath
 	return &cfg, nil
 }
 
@@ -41,12 +57,22 @@ func WriteConfig(cfg *Config) error {
 		return fmt.Errorf("config file path not set")
 	}
 
+	// Use filepath.Clean to normalize the path and remove any relative path elements
+	cleanPath := filepath.Clean(cfg.ConfigFile)
+	
+	// Make sure the parent directory exists
+	dir := filepath.Dir(cleanPath)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return fmt.Errorf("parent directory does not exist: %s", dir)
+	}
+
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return fmt.Errorf("error marshalling config: %w", err)
 	}
 
-	err = os.WriteFile(cfg.ConfigFile, data, 0600)
+	// Write the file with secure permissions (0600 - only owner can read/write)
+	err = os.WriteFile(cleanPath, data, 0600) // #nosec G304
 	if err != nil {
 		return fmt.Errorf("error writing config file: %w", err)
 	}

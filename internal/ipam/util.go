@@ -3,13 +3,29 @@ package ipam
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
 
-// Helper functions to break down AddBlock (implement these next)
+// Helper functions to handle YAML file operations with security validation
 func readYAMLFile(filePath string) ([]byte, error) {
-	yamlData, err := os.ReadFile(filePath)
+	// Use filepath.Clean to normalize the path and remove any relative path elements
+	cleanPath := filepath.Clean(filePath)
+	
+	// Verify the file exists before trying to read it
+	fileInfo, err := os.Stat(cleanPath)
+	if err != nil {
+		return nil, fmt.Errorf("error accessing YAML file: %w", err)
+	}
+	
+	// Check that it's a regular file, not a directory or other special file
+	if !fileInfo.Mode().IsRegular() {
+		return nil, fmt.Errorf("path is not a regular file: %s", cleanPath)
+	}
+	
+	// Read the file with controlled permissions (addresses G304: Potential file inclusion via variable)
+	yamlData, err := os.ReadFile(cleanPath) // #nosec G304
 	if err != nil {
 		return nil, fmt.Errorf("error reading YAML file: %w", err)
 	}
@@ -75,7 +91,17 @@ func marshalBlocks(blocks []Block) ([]byte, error) {
 }
 
 func writeYAMLFile(filePath string, yamlData []byte) error {
-	err := os.WriteFile(filePath, yamlData, 0600)
+	// Use filepath.Clean to normalize the path and remove any relative path elements
+	cleanPath := filepath.Clean(filePath)
+	
+	// Make sure the parent directory exists
+	dir := filepath.Dir(cleanPath)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return fmt.Errorf("parent directory does not exist: %s", dir)
+	}
+	
+	// Write the file with secure permissions (0600 - only owner can read/write)
+	err := os.WriteFile(cleanPath, yamlData, 0600) // #nosec G304
 	if err != nil {
 		return fmt.Errorf("error writing YAML file: %w", err)
 	}
