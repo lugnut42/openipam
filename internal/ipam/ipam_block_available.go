@@ -47,7 +47,9 @@ func ListAvailableCIDRs(cfg *config.Config, blockCIDR, fileKey string) error {
 	for _, cidr := range availableCIDRs {
 		fmt.Fprintln(w, cidr)
 	}
-	w.Flush()
+	if err := w.Flush(); err != nil {
+		return fmt.Errorf("error flushing writer: %w", err)
+	}
 
 	return nil
 }

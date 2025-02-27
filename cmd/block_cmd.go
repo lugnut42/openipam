@@ -223,7 +223,9 @@ func init() {
 	blockCreateCmd.Flags().String("cidr", "", "CIDR range of the block")
 	blockCreateCmd.Flags().String("description", "", "Description of the block")
 	blockCreateCmd.Flags().StringP("file", "f", "default", "Block file key to use")
-	blockCreateCmd.MarkFlagRequired("cidr")
+	if err := blockCreateCmd.MarkFlagRequired("cidr"); err != nil {
+		fmt.Fprintf(os.Stderr, "Error marking flag required: %v\n", err)
+	}
 
 	blockListCmd.Flags().StringP("file", "f", "default", "Block file key to use")
 

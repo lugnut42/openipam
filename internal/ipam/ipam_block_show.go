@@ -32,7 +32,7 @@ func ShowBlock(cfg *config.Config, cidr, fileKey string) error {
 				// Calculate the stats
 				_, ipNet, _ := net.ParseCIDR(block.CIDR)
 				totalIPs := calculateIPCount(ipNet)
-				
+
 				var allocatedIPs uint64 = 0
 				for _, subnet := range block.Subnets {
 					_, subnetNet, err := net.ParseCIDR(subnet.CIDR)
@@ -40,12 +40,12 @@ func ShowBlock(cfg *config.Config, cidr, fileKey string) error {
 						allocatedIPs += calculateIPCount(subnetNet)
 					}
 				}
-				
+
 				utilization := float64(0)
 				if totalIPs > 0 {
 					utilization = float64(allocatedIPs) / float64(totalIPs) * 100
 				}
-				
+
 				blocks[i].Stats = &UtilizationStats{
 					TotalIPs:     totalIPs,
 					AllocatedIPs: allocatedIPs,
@@ -53,11 +53,11 @@ func ShowBlock(cfg *config.Config, cidr, fileKey string) error {
 					Utilization:  utilization,
 				}
 			}
-			
+
 			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 			fmt.Fprintln(w, "Block CIDR\tDescription")
 			fmt.Fprintln(w, block.CIDR+"\t"+block.Description)
-			
+
 			// Display utilization
 			if block.Stats != nil {
 				fmt.Fprintln(w, "\nUtilization:")
@@ -66,13 +66,15 @@ func ShowBlock(cfg *config.Config, cidr, fileKey string) error {
 				fmt.Fprintf(w, "Available IPs:\t%d\n", block.Stats.AvailableIPs)
 				fmt.Fprintf(w, "Utilization:\t%.2f%%\n", block.Stats.Utilization)
 			}
-			
+
 			fmt.Fprintln(w, "\nSubnets:")
 			fmt.Fprintln(w, "Subnet CIDR\tName\tRegion")
 			for _, subnet := range block.Subnets {
 				fmt.Fprintln(w, subnet.CIDR+"\t"+subnet.Name+"\t"+subnet.Region)
 			}
-			w.Flush()
+			if err := w.Flush(); err != nil {
+				return fmt.Errorf("error flushing writer: %w", err)
+			}
 			return nil
 		}
 	}

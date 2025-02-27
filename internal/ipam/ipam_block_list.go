@@ -11,7 +11,7 @@ import (
 func ListBlocks(cfg *config.Config, fileKey ...string) error {
 	// Get all block files or a specific one
 	blockFiles := make(map[string]string)
-	
+
 	if len(fileKey) > 0 && fileKey[0] != "" {
 		// Use a specific block file
 		specificFile, ok := cfg.BlockFiles[fileKey[0]]
@@ -51,6 +51,8 @@ func ListBlocks(cfg *config.Config, fileKey ...string) error {
 		}
 	}
 
-	w.Flush()
+	if err := w.Flush(); err != nil {
+		return fmt.Errorf("error flushing writer: %w", err)
+	}
 	return nil
 }

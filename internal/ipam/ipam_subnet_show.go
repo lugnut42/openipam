@@ -31,7 +31,9 @@ func ShowSubnet(cfg *config.Config, subnetCIDR string) error {
 					fmt.Fprintln(w, "Name:\t", subnet.Name)
 					fmt.Fprintln(w, "Region:\t", subnet.Region) // Include the Region
 
-					w.Flush()
+					if err := w.Flush(); err != nil {
+						return fmt.Errorf("error flushing writer: %w", err)
+					}
 
 					return nil
 				}

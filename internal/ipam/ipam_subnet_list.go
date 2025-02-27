@@ -40,7 +40,9 @@ func ListSubnets(cfg *config.Config, blockCIDR, region string) error {
 			}
 		}
 
-		w.Flush()
+		if err := w.Flush(); err != nil {
+			return fmt.Errorf("error flushing writer: %w", err)
+		}
 	}
 	return nil
 }
