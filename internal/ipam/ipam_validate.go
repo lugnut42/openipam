@@ -73,10 +73,76 @@ func ValidateBlockFile(cfg *config.Config, fileKey string) (*ValidationResults, 
 }
 
 // validateYAMLStructure checks if the YAML has the expected structure
+// This function is now compatible with both formats:
+// 1. A list of blocks (application format)
+// 2. A map with "blocks" key (validation format)
 func validateYAMLStructure(yamlData []byte, fileKey string, results *ValidationResults) {
-	// Check if we can unmarshal into our expected structure
+	// First try to unmarshal as a list of blocks (application format)
+	var blocksList []interface{}
+	err := yaml.Unmarshal(yamlData, &blocksList)
+	
+	// If successful and it's a non-empty list, validate as list format
+	if err == nil && len(blocksList) > 0 {
+		// It's a list format, which is valid for the application
+		// Check each block in the list
+		for i, blockData := range blocksList {
+			blockMap, ok := blockData.(map[string]interface{})
+			if !ok {
+				results.Results = append(results.Results, ValidationResult{
+					Type:        "error",
+					File:        fileKey,
+					Category:    "structure",
+					Description: "Block data is not a map",
+					Location:    fmt.Sprintf("blocks[%d]", i),
+				})
+				continue
+			}
+			
+			// Check if cidr exists and is valid
+			cidrValue, ok := blockMap["cidr"]
+			if !ok {
+				results.Results = append(results.Results, ValidationResult{
+					Type:        "error",
+					File:        fileKey,
+					Category:    "structure",
+					Description: "Block is missing required 'cidr' field",
+					Location:    fmt.Sprintf("blocks[%d]", i),
+				})
+				continue
+			}
+			
+			cidr, ok := cidrValue.(string)
+			if !ok {
+				results.Results = append(results.Results, ValidationResult{
+					Type:        "error",
+					File:        fileKey,
+					Category:    "structure",
+					Description: "Block 'cidr' field is not a string",
+					Location:    fmt.Sprintf("blocks[%d].cidr", i),
+				})
+				continue
+			}
+			
+			// Validate CIDR format
+			_, _, err := net.ParseCIDR(cidr)
+			if err != nil {
+				results.Results = append(results.Results, ValidationResult{
+					Type:        "error",
+					File:        fileKey,
+					Category:    "cidr",
+					Description: fmt.Sprintf("Invalid CIDR format: %s", err),
+					Location:    fmt.Sprintf("blocks[%d].cidr", i),
+				})
+			}
+		}
+		
+		// Successfully validated list format
+		return
+	}
+	
+	// If list format didn't work, try map format (older validation format)
 	var yamlMap map[string]interface{}
-	err := yaml.Unmarshal(yamlData, &yamlMap)
+	err = yaml.Unmarshal(yamlData, &yamlMap)
 	if err != nil {
 		results.Results = append(results.Results, ValidationResult{
 			Type:        "error",

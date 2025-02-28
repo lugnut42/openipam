@@ -15,6 +15,7 @@ The tool is designed to simplify network administration by allowing administrato
 
 - [OpenIPAM](#openipam)
   - [Table of Contents](#table-of-contents)
+  - [Demo](#demo)
   - [Getting Started](#getting-started)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
@@ -27,9 +28,42 @@ The tool is designed to simplify network administration by allowing administrato
   - [Configuration](#configuration)
     - [Block Files](#block-files)
     - [Patterns](#patterns)
+  - [Features and Capabilities](#features-and-capabilities)
+  - [Configuration Validation](#configuration-validation)
   - [Future enhancements](#future-enhancements)
   - [Contributing](#contributing)
   - [License](#license)
+
+## Demo
+
+Watch OpenIPAM in action:
+
+[![asciicast](https://asciinema.org/a/YOUR_ASCIINEMA_ID.svg)](https://asciinema.org/a/YOUR_ASCIINEMA_ID)
+
+The demo showcases OpenIPAM's key capabilities:
+
+1. **Setting up development environment** - Creating initial configuration
+2. **Managing network blocks** - Creating IP blocks with metadata
+3. **Subnet management** - Creating, listing, and inspecting subnets
+4. **Managing multiple environments** - Setting up dev, test, and prod environments
+5. **Pattern-based provisioning** - Creating standardized subnet templates
+6. **Configuration validation** - Ensuring IP address integrity
+
+*To recreate this demo:*
+```bash
+# Record the demo using asciinema
+./record-demo.sh
+# This will run the demo script and record with asciinema
+
+# Alternatively, record manually
+asciinema rec -i 2 -t "OpenIPAM Demo" openipam-demo.cast
+./demo.sh
+# Stop recording with Ctrl-D when complete
+
+# Upload to asciinema.org
+asciinema upload openipam-demo.cast
+# Copy the URL and replace the placeholder in this README
+```
 
 ## Getting Started
 

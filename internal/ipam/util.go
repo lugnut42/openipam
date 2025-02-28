@@ -57,11 +57,20 @@ func unmarshalBlocks(yamlData []byte) ([]Block, error) {
 
 					for i, subnetInterface := range subnetsInterface {
 						if subnet, ok := subnetInterface.(map[string]interface{}); ok {
-							subnets[i] = Subnet{
+							// Create subnet with all fields, including region
+							s := Subnet{
 								CIDR: subnet["cidr"].(string),
 								Name: subnet["name"].(string),
 							}
-
+							
+							// Handle the region field if present
+							if region, ok := subnet["region"]; ok && region != nil {
+								if regionStr, ok := region.(string); ok {
+									s.Region = regionStr
+								}
+							}
+							
+							subnets[i] = s
 						}
 
 					}
