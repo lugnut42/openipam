@@ -27,3 +27,4 @@ go.work.sum
 
 # Binary (but not the internal/ipam directory)
 /ipam
+/validate-blocks
