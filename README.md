@@ -29,6 +29,11 @@ The tool is designed to simplify network administration by allowing administrato
     - [Block Files](#block-files)
     - [Patterns](#patterns)
   - [Features and Capabilities](#features-and-capabilities)
+    - [Robust CIDR Overlap Detection](#robust-cidr-overlap-detection)
+    - [Multi-Block File Support](#multi-block-file-support)
+    - [Pattern-Based Subnet Creation](#pattern-based-subnet-creation)
+    - [Subnet Utilization Reporting](#subnet-utilization-reporting)
+    - [Comprehensive Testing](#comprehensive-testing)
   - [Configuration Validation](#configuration-validation)
   - [Future enhancements](#future-enhancements)
   - [Contributing](#contributing)
@@ -38,7 +43,7 @@ The tool is designed to simplify network administration by allowing administrato
 
 Watch OpenIPAM in action:
 
-[![asciicast](https://asciinema.org/a/YOUR_ASCIINEMA_ID.svg)](https://asciinema.org/a/YOUR_ASCIINEMA_ID)
+[![asciicast](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl.png)](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl)
 
 The demo showcases OpenIPAM's key capabilities:
 
