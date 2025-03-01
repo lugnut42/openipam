@@ -43,7 +43,7 @@ The tool is designed to simplify network administration by allowing administrato
 
 Watch OpenIPAM in action:
 
-[![asciicast](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl.png)](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl)
+[![asciicast](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl.svg)](https://asciinema.org/a/WcvAvmsclSrWoX3PjeiFrKFJl)
 
 The demo showcases OpenIPAM's key capabilities:
 
